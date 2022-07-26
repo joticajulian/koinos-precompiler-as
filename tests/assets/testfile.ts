@@ -2,13 +2,13 @@ import { Arrays, Protobuf, System, SafeMath, authority } from "koinos-sdk-as";
 import { token } from "./proto/token";
 
 export class Token extends OtherClass {
-
   name: string = "Token";
 
   /**
    * Name function
    * @my test value with spaces
    * @param args
+   * @external
    */
   name(args: token.name_arguments): token.name_result {
     return new token.name_result(this.name);
@@ -18,6 +18,7 @@ export class Token extends OtherClass {
    * Transfer function
    * @param args
    * @returns
+   * @external
    */
   transfer(args: token.transfer_arguments): token.transfer_result {
     const from = args.from!;
