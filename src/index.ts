@@ -13,14 +13,15 @@ interface Argument {
   type: TypeModel;
 }
 
-const filePath = path.join(__dirname, "../tests/assets/testfile.ts");
-const decls = fs.readFileSync(filePath, "utf8");
-const structure = tsstruct.parseStruct(decls, {}, filePath);
+const [inputFile] = process.argv.slice(2);
+const decls = fs.readFileSync(inputFile, "utf8");
+const structure = tsstruct.parseStruct(decls, {}, inputFile);
 
 const className = structure.classes[0].name;
 const protoAs = className.toLocaleLowerCase();
 const methods: {
   name: string;
+  comment: string;
   entryPoint: string;
   argType: string;
   retType: string;
@@ -63,24 +64,25 @@ structure.classes[0].methods.forEach((method) => {
   let entryPoint: string;
   const tagEntryPoint = comment.tags.find((t) => t.tag === "entryPoint");
   if (tagEntryPoint) {
-    if (tagEntryPoint.name.startsWith("0x")) {
-      // entry point defined as 4-bytes number
-      entryPoint = tagEntryPoint.name;
-      if (entryPoint !== `0x${Number(entryPoint).toString(16).slice(0, 8)}`) {
-        throw new Error(
-          [
-            `invalid entryPoint ${entryPoint}. It should be a 4-bytes`,
-            " number in hex format, or a function name",
-          ].join("")
-        );
-      }
-    } else {
-      // entry point defined with a custom name
+    if (/^([a-zA-z])/.test(tagEntryPoint.name)) {
+      // starts with a letter. Entry point defined with a custom name
       entryPoint = `0x${crypto
         .createHash("sha256")
         .update(tagEntryPoint.name)
         .digest("hex")
         .slice(0, 8)}`;
+    } else {
+      // entry point defined as 4-bytes number
+      const number = Number(tagEntryPoint.name);
+      if (Number.isNaN(number) || number > Number("0xffffffff")) {
+        throw new Error(
+          [
+            `invalid entryPoint ${tagEntryPoint.name}. It should be`,
+            " a number lower or equal to 0xffffffff",
+          ].join("")
+        );
+      }
+      entryPoint = tagEntryPoint.name;
     }
   } else {
     // calculation of the entry point from the function name
@@ -99,6 +101,7 @@ structure.classes[0].methods.forEach((method) => {
 
   methods.push({
     name: method.name,
+    comment: method.text,
     entryPoint,
     argType,
     retType,
@@ -109,7 +112,7 @@ structure.classes[0].methods.forEach((method) => {
 const maxReturnBuffer = 1024;
 const hasAuthorize = true;
 
-const indexTs = `import { System, Protobuf${
+const indexData = `import { System, Protobuf${
   hasAuthorize ? ", authority" : ""
 } } from "koinos-sdk-as";
 import { ${className} } from "./${className}";
@@ -139,7 +142,7 @@ switch (entryPoint) {
         : `returnBuffer = Protobuf.encode(result, ${m.retType}.encode);`
     }
     break;
-  },
+  }
 
   `;
     })
@@ -152,4 +155,54 @@ switch (entryPoint) {
 System.setContractResult(returnBuffer);
 System.exitContract(0);
 `;
-console.log(indexTs);
+
+const interfaceData = `import { Protobuf, System } from "koinos-sdk-as";
+import { ${protoAs} } from "./proto/${protoAs}";
+
+export class ${className} {
+  _contractId: Uint8Array;
+
+  /**
+   * Create an instance of a ${className} contract
+   * @example
+   * ${"```"}ts
+   *   const contract = new ${className}(Base58.decode("1DQzuCcTKacbs9GGScFTU1Hc8BsyARTPqe"));
+   * ${"```"}
+   */
+  constructor(contractId: Uint8Array) {
+    this._contractId = contractId;
+  }${methods
+    .map((m) => {
+      return `${m.comment.slice(0, m.comment.indexOf("*/") + 2)}
+  ${m.name}(${m.argType ? `args: ${m.argType}` : ""}): ${m.retType} {
+    const argsBuffer = ${
+      m.argType
+        ? `Protobuf.encode(args, ${m.argType}.encode);`
+        : "new Uint8Array(0);"
+    }
+    ${
+      m.isVoid ? "" : "const resultBuffer = "
+    }System.callContract(this._contractId, ${m.entryPoint}, argsBuffer);
+    ${
+      m.isVoid
+        ? "return;"
+        : `return Protobuf.decode<${m.retType}>(resultBuffer, ${m.retType}.decode);`
+    }
+  }`;
+    })
+    .join("")}
+}
+`;
+
+const outputFileIndex = path.join(path.parse(inputFile).dir, "index.ts");
+const outputFileInterface = path.join(
+  path.parse(inputFile).dir,
+  `I${className}.ts`
+);
+
+fs.writeFileSync(outputFileIndex, indexData);
+fs.writeFileSync(outputFileInterface, interfaceData);
+console.log(`files generated:
+- ${outputFileIndex}
+- ${outputFileInterface}
+`);
