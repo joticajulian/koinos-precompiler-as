@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import * as tsstruct from "ts-structure-parser";
 import { parse } from "comment-parser";
 
@@ -19,9 +20,23 @@ const jsonStructure = tsstruct.parseStruct(decls, {}, filePath);
 const className = jsonStructure.classes[0].name;
 const protoAs = className.toLocaleLowerCase();
 const methods = jsonStructure.classes[0].methods.map((method) => {
+  const argType =
+    method.arguments.length === 0
+      ? undefined
+      : (method.arguments[0] as unknown as Argument).type.typeName;
+  const retType = (method.returnType as unknown as TypeModel).typeName;
+
   return {
     ...method,
+    entryPoint: `0x${crypto
+      .createHash("sha256")
+      .update(method.name)
+      .digest("hex")
+      .slice(0, 8)}`,
     comments: parse(method.text),
+    argType,
+    retType,
+    isVoid: retType === "void",
   };
 });
 const externalMethods = methods.filter((method) => {
@@ -55,19 +70,33 @@ const contract = new ${className}();
 switch (entryPoint) {
   ${externalMethods
     .map((m) => {
-      const argType = (m.arguments[0] as unknown as Argument).type.typeName;
-      const retType = (m.returnType as unknown as TypeModel).typeName;
       return `// ${m.name}
-  case 0x12345678: {
-    const args = Protobuf.decode<${argType}>(argsBuffer, ${argType}.decode);
-    const result = contract.${m.name}(args);
-    returnBuffer = Protobuf.encode(result, ${retType}.encode);
+  case ${m.entryPoint}: {${
+        m.argType
+          ? `
+    const args = Protobuf.decode<${m.argType}>(argsBuffer, ${m.argType}.decode);`
+          : ""
+      }
+    ${m.isVoid ? "" : "const result = "}contract.${m.name}(${
+        m.argType ? "args" : ""
+      });
+    ${
+      m.isVoid
+        ? `returnBuffer = new Uint8Array(0);`
+        : `returnBuffer = Protobuf.encode(result, ${m.retType}.encode);`
+    }
     break;
   },
 
   `;
     })
-    .join("")}
+    .join("")}default: {
+    System.exitContract(1);
+    break;
+  }
 }
+
+System.setContractResult(returnBuffer);
+System.exitContract(0);
 `;
 console.log(indexTs);
