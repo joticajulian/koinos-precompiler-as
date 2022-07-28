@@ -3,21 +3,29 @@ import path from "path";
 import crypto from "crypto";
 import * as tsstruct from "ts-structure-parser";
 import { parse } from "comment-parser";
+import { Abi, TypeModel, Argument } from "./interface";
 
-interface TypeModel {
-  typeName: string;
-}
-
-interface Argument {
-  name: string;
-  type: TypeModel;
-}
-
-const [inputFile] = process.argv.slice(2);
+const [inputFile, inputClassName] = process.argv.slice(2);
 const decls = fs.readFileSync(inputFile, "utf8");
 const structure = tsstruct.parseStruct(decls, {}, inputFile);
 
-const className = structure.classes[0].name;
+let classId = 0;
+if (structure.classes.length > 1) {
+  if (!inputClassName) {
+    throw new Error(
+      [
+        `the file ${inputFile} has ${structure.classes.length}`,
+        " classes. Please specify which is the main class",
+      ].join("")
+    );
+  }
+  classId = structure.classes.findIndex((c) => c.name === inputClassName);
+  if (classId < 0) {
+    throw new Error(`the class ${inputClassName} was not found`);
+  }
+}
+
+const className = structure.classes[classId].name;
 const protoAs = className.toLocaleLowerCase();
 const methods: {
   name: string;
@@ -28,7 +36,13 @@ const methods: {
   isVoid: boolean;
 }[] = [];
 
-structure.classes[0].methods.forEach((method) => {
+const abiData: Abi = {
+  methods: {},
+  types: "",
+  koilib_types: {},
+};
+
+structure.classes[classId].methods.forEach((method) => {
   const comments = parse(method.text);
 
   // skip functions without comments
@@ -46,7 +60,10 @@ structure.classes[0].methods.forEach((method) => {
 
   // check if the function is marked as @external
   const [comment] = comments;
-  if (!comment.tags.find((t) => t.tag === "external")) return;
+  const getTag = (tag: string) => {
+    return comment.tags.find((t) => t.tag.toLocaleLowerCase() === tag);
+  };
+  if (!getTag("external")) return;
 
   // 0 or 1 argument allowed, but not more
   if (method.arguments.length > 1) {
@@ -62,7 +79,7 @@ structure.classes[0].methods.forEach((method) => {
 
   // check if has an @entryPoint. Otherwise calculate it
   let entryPoint: string;
-  const tagEntryPoint = comment.tags.find((t) => t.tag === "entryPoint");
+  const tagEntryPoint = getTag("entrypoint");
   if (tagEntryPoint) {
     if (/^([a-zA-z])/.test(tagEntryPoint.name)) {
       // starts with a letter. Entry point defined with a custom name
@@ -93,20 +110,50 @@ structure.classes[0].methods.forEach((method) => {
       .slice(0, 8)}`;
   }
 
+  // check if the function is @readOnly
+  let readOnly: boolean;
+  const tagReadOnly = getTag("readonly");
+  if (tagReadOnly) {
+    if (!["true", "false", ""].includes(tagReadOnly.name)) {
+      throw new Error(
+        [
+          `invalid readOnly definition "${tagReadOnly.name}".`,
+          ` It must be "true", "false", or just an empty value`,
+        ].join("")
+      );
+    }
+    if (tagReadOnly.name === "false") readOnly = false;
+    else readOnly = true;
+  } else {
+    readOnly = false;
+  }
+
   const argType =
     method.arguments.length === 0
       ? ""
       : (method.arguments[0] as unknown as Argument).type.typeName;
   const retType = (method.returnType as unknown as TypeModel).typeName;
+  const isVoid = retType === "void";
 
+  // store results
   methods.push({
     name: method.name,
     comment: method.text,
     entryPoint,
     argType,
     retType,
-    isVoid: retType === "void",
+    isVoid,
   });
+
+  // include method in the abi
+  abiData.methods[method.name] = {
+    argument: argType,
+    return: isVoid ? "" : retType,
+    description: comment.description,
+    entry_point: Number(entryPoint),
+    read_only: readOnly,
+    "read-only": readOnly,
+  };
 });
 
 const maxReturnBuffer = 1024;
@@ -194,15 +241,19 @@ export class ${className} {
 }
 `;
 
-const outputFileIndex = path.join(path.parse(inputFile).dir, "index.ts");
-const outputFileInterface = path.join(
-  path.parse(inputFile).dir,
-  `I${className}.ts`
+const { dir } = path.parse(inputFile);
+const outputFileIndex = path.join(dir, "index.ts");
+const outputFileInterface = path.join(dir, `I${className}.ts`);
+const outputFileAbi = path.join(
+  dir,
+  `${className.toLocaleLowerCase()}-abi.json`
 );
 
 fs.writeFileSync(outputFileIndex, indexData);
 fs.writeFileSync(outputFileInterface, interfaceData);
+fs.writeFileSync(outputFileAbi, JSON.stringify(abiData, null, 2));
 console.log(`files generated:
 - ${outputFileIndex}
 - ${outputFileInterface}
+- ${outputFileAbi}
 `);
