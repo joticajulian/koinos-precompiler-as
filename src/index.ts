@@ -128,6 +128,7 @@ structure.classes[classId].methods.forEach((method) => {
     readOnly = false;
   }
 
+  // get the argument and return types
   const argType =
     method.arguments.length === 0
       ? ""
@@ -138,7 +139,7 @@ structure.classes[classId].methods.forEach((method) => {
   // store results
   methods.push({
     name: method.name,
-    comment: method.text,
+    comment: method.text.slice(0, method.text.indexOf("*/") + 2),
     entryPoint,
     argType,
     retType,
@@ -220,7 +221,7 @@ export class ${className} {
     this._contractId = contractId;
   }${methods
     .map((m) => {
-      return `${m.comment.slice(0, m.comment.indexOf("*/") + 2)}
+      return `${m.comment}
   ${m.name}(${m.argType ? `args: ${m.argType}` : ""}): ${m.retType} {
     const argsBuffer = ${
       m.argType
