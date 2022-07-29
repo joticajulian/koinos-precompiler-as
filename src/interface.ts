@@ -13,6 +13,20 @@ export interface Abi {
   koilib_types: unknown;
 }
 
+export interface TsStructure {
+  className: string;
+  protoAs: string[];
+  methods: {
+    name: string;
+    comment: string;
+    entryPoint: string;
+    argType: string;
+    retType: string;
+    isVoid: boolean;
+  }[];
+  hasAuthorize: boolean;
+}
+
 export interface TypeModel {
   typeName: string;
 }
