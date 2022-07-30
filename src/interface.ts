@@ -19,7 +19,9 @@ export interface TsStructure {
   methods: {
     name: string;
     comment: string;
+    description: string;
     entryPoint: string;
+    readOnly: boolean;
     argType: string;
     retType: string;
     isVoid: boolean;
