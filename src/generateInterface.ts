@@ -5,10 +5,12 @@ export function generateInferface(tsStructure: TsStructure) {
 
   return `import { System, Protobuf${
     hasAuthorize ? ", authority" : ""
-  } } from "koinos-sdk-as";${protoAs.map((p) => {
-    return `
+  } } from "koinos-sdk-as";${protoAs
+    .map((p) => {
+      return `
 import { ${p} } from "./proto/${p}";`;
-  })}
+    })
+    .join("")}
 
 export class ${className} {
   _contractId: Uint8Array;

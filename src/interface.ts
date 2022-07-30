@@ -14,6 +14,7 @@ export interface Abi {
 }
 
 export interface TsStructure {
+  file: string;
   className: string;
   protoAs: string[];
   methods: {

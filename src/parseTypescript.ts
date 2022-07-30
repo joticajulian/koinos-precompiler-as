@@ -22,7 +22,7 @@ export function parseTypescript(
         ].join("")
       );
     }
-    classId = structure.classes.findIndex((c) => c.name === className);
+    classId = structure.classes.findIndex((c) => c.name === inputClassName);
     if (classId < 0) {
       throw new Error(`the class ${inputClassName} was not found`);
     }
@@ -31,6 +31,7 @@ export function parseTypescript(
   // Define output variable
   const className = structure.classes[classId].name;
   const tsStructure: TsStructure = {
+    file,
     className,
     protoAs: [structure.classes[classId].name.toLocaleLowerCase()],
     methods: [],

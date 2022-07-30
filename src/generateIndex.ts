@@ -7,10 +7,12 @@ export function generateIndex(tsStructure: TsStructure) {
   return `import { System, Protobuf${
     hasAuthorize ? ", authority" : ""
   } } from "koinos-sdk-as";
-import { ${className} } from "./${className}";${protoAs.map((p) => {
-    return `
+import { ${className} } from "./${className}";${protoAs
+    .map((p) => {
+      return `
 import { ${p} } from "./proto/${p}";`;
-  })}
+    })
+    .join("")}
 
 const entryPoint = System.getEntryPoint();
 const argsBuffer = System.getContractArguments();
