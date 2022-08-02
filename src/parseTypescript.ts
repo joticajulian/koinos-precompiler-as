@@ -4,39 +4,36 @@ import * as tsstruct from "ts-structure-parser";
 import { parse } from "comment-parser";
 import { TypeModel, Argument, TsStructure } from "./interface";
 
-export function parseTypescript(
-  file: string,
-  inputClassName: string
+function parseStruct2(
+  structures: ReturnType<typeof tsstruct.parseStruct>[],
+  refClass: string
 ): TsStructure {
-  const decls = fs.readFileSync(file, "utf8");
-  const structure = tsstruct.parseStruct(decls, {}, file);
+  // find the structure that matches the refClass
+  const structureId = structures.findIndex((st) => {
+    return st.classes.find((c) => c.name === refClass);
+  });
 
-  // Determine the index of the class in the file
-  let classId = 0;
-  if (structure.classes.length > 1) {
-    if (!inputClassName) {
-      throw new Error(
-        [
-          `the file ${file} has ${structure.classes.length}`,
-          " classes. Please specify which is the main class",
-        ].join("")
-      );
-    }
-    classId = structure.classes.findIndex((c) => c.name === inputClassName);
-    if (classId < 0) {
-      throw new Error(`the class ${inputClassName} was not found`);
-    }
+  if (structureId < 0) {
+    throw new Error(
+      [
+        `the class ${refClass} was not found in the files.`,
+        `Make sure you have "files" defined in koinos.config.js`,
+      ].join(" ")
+    );
   }
 
-  // Define output variable
-  const className = structure.classes[classId].name;
+  const structure = structures[structureId];
+
   const tsStructure: TsStructure = {
-    file,
-    className,
-    protoAs: [structure.classes[classId].name.toLocaleLowerCase()],
+    className: refClass,
+    protoAs: [],
     methods: [],
     hasAuthorize: true,
+    extends: [],
   };
+
+  // Determine the index of the class in the file
+  const classId = structure.classes.findIndex((c) => c.name === refClass);
 
   // Parse data on each class method
   structure.classes[classId].methods.forEach((method) => {
@@ -49,9 +46,10 @@ export function parseTypescript(
     if (comments.length > 1) {
       throw new Error(
         [
-          `the function "${method.name}" has ${comments.length}`,
-          " block comments. However, only 1 block comment is allowed",
-        ].join("")
+          `the function "${method.name}" of class "${refClass}"`,
+          `has ${comments.length} block comments. However, only`,
+          " 1 block comment is allowed",
+        ].join(" ")
       );
     }
 
@@ -66,11 +64,11 @@ export function parseTypescript(
     if (method.arguments.length > 1) {
       throw new Error(
         [
-          `the function "${method.name}" has ${method.arguments.length}`,
-          " arguments. However, only 1 argument is allowed.",
-          " If you need more arguments consider to wrap them in a",
-          " single definition in the proto file of the project",
-        ].join("")
+          `the function "${method.name}" of class "${refClass}"`,
+          `has ${method.arguments.length} arguments. However, only`,
+          "1 argument is allowed. If you need more arguments consider",
+          "to wrap them in a single definition in the proto file",
+        ].join(" ")
       );
     }
 
@@ -144,7 +142,30 @@ export function parseTypescript(
       retType,
       isVoid,
     });
+
+    // check if the class extends
+    tsStructure.extends = structure.classes[classId].extends.map((e) => {
+      const { typeName: parentRefClass } = e as unknown as { typeName: string };
+      return parseStruct2(structures, parentRefClass);
+    });
   });
 
   return tsStructure;
+}
+
+export function parseTypescript(
+  files: string[],
+  className: string
+): TsStructure {
+  const structures = files.map((file) => {
+    try {
+      const decls = fs.readFileSync(file, "utf8");
+      return tsstruct.parseStruct(decls, {}, file);
+    } catch (error) {
+      console.error(`error reading file ${file}`);
+      throw error;
+    }
+  });
+
+  return parseStruct2(structures, className);
 }

@@ -1,3 +1,9 @@
+export interface PrecompilerConfig {
+  proto: string[];
+  class: string;
+  files: string[];
+}
+
 export interface Abi {
   methods: {
     [x: string]: {
@@ -14,7 +20,6 @@ export interface Abi {
 }
 
 export interface TsStructure {
-  file: string;
   className: string;
   protoAs: string[];
   methods: {
@@ -28,6 +33,7 @@ export interface TsStructure {
     isVoid: boolean;
   }[];
   hasAuthorize: boolean;
+  extends: TsStructure[];
 }
 
 export interface TypeModel {
