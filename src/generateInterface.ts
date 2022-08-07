@@ -1,18 +1,22 @@
 import { TsStructure } from "./interface";
 
-export function generateInferface(tsStructure: TsStructure) {
-  const { className, protoAs, methods, hasAuthorize } = tsStructure;
+export function generateInferface(tsStructure: TsStructure): string {
+  const { className, methods, hasAuthorize } = tsStructure;
 
   return `import { System, Protobuf${
     hasAuthorize ? ", authority" : ""
-  } } from "koinos-sdk-as";${protoAs
-    .map((p) => {
+  } } from "koinos-sdk-as";${tsStructure.extends
+    .map((e) => {
       return `
-import { ${p} } from "./proto/${p}";`;
+import { ${e.className} } from "./I${e.className}";`;
     })
     .join("")}
 
-export class ${className} {
+export class ${className}${
+    tsStructure.extends.length > 0
+      ? ` extends ${tsStructure.extends.map((e) => e.className).join(", ")}`
+      : ""
+  } {
   _contractId: Uint8Array;
 
   /**
