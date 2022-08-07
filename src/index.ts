@@ -23,7 +23,7 @@ async function main() {
   if (!fs.existsSync(buildDir)) fs.mkdirSync(buildDir, { recursive: true });
 
   // generate index file
-  const indexData = generateIndex(tsStructure);
+  const indexData = generateIndex(tsStructure, dir);
   const outputFileIndex = path.join(dir, "build/index.ts");
   fs.writeFileSync(outputFileIndex, indexData);
 

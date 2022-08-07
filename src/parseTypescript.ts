@@ -26,6 +26,7 @@ function parseStruct2(
 
   const tsStructure: TsStructure = {
     className: refClass,
+    file: structure.name,
     protoAs: [],
     methods: [],
     hasAuthorize: true,
