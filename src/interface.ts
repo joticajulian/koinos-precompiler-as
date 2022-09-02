@@ -8,6 +8,7 @@ export interface Abi {
   methods: {
     [x: string]: {
       entry_point: number;
+      "entry-point": string;
       argument?: string;
       return?: string;
       read_only?: boolean;
@@ -19,10 +20,20 @@ export interface Abi {
   koilib_types: unknown;
 }
 
+export interface JsonDescriptor {
+  nested: {
+    [x: string]: unknown;
+  };
+}
+
 export interface TsStructure {
   className: string;
   file: string;
-  protoAs: string[];
+  proto: {
+    className: string;
+    file: string;
+    jsonDescriptor: JsonDescriptor;
+  }[];
   methods: {
     name: string;
     comment: string;

@@ -1,10 +1,9 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
-import * as pbjs from "protobufjs-cli/pbjs";
 import { execSync } from "child_process";
 import { Abi, TsStructure } from "./interface";
-import { getAllMethods } from "./utils";
+import { generateJsonDescriptor, getAllMethods } from "./utils";
 
 const generateBinaryDescriptor = (protoFilesPaths: string[]): string => {
   const pbFilePath = `./temp-${crypto.randomBytes(5).toString("hex")}.pb`;
@@ -20,24 +19,6 @@ const generateBinaryDescriptor = (protoFilesPaths: string[]): string => {
   const descriptor = fs.readFileSync(pbFilePath);
   fs.unlinkSync(pbFilePath);
   return descriptor.toString("base64");
-};
-
-const generateJsonDescriptor = async (
-  protoFilesPaths: string[]
-): Promise<Record<string, unknown>> => {
-  return new Promise((resolve, reject) => {
-    pbjs.main(
-      ["--keep-case", "--target", "json", ...protoFilesPaths],
-      (err, output) => {
-        if (err) reject(err);
-        if (output) {
-          resolve(JSON.parse(output) as Record<string, unknown>);
-        } else {
-          resolve({});
-        }
-      }
-    );
-  });
 };
 
 export async function generateAbi(
@@ -59,6 +40,7 @@ export async function generateAbi(
         return: m.isVoid ? "" : m.retType,
         description: m.description,
         entry_point: Number(m.entryPoint),
+        "entry-point": m.entryPoint,
         read_only: m.readOnly,
         "read-only": m.readOnly,
       };

@@ -16,7 +16,7 @@ async function main() {
   const config = require(fullPathConfigFile) as PrecompilerConfig;
   const files = config.files.map((f) => path.join(dir, f));
   const proto = config.proto.map((p) => path.join(dir, p));
-  const tsStructure = parseTypescript(files, config.class);
+  const tsStructure = await parseTypescript(files, proto, config.class);
 
   // prepare build folder
   const buildDir = path.join(dir, "build/interfaces");

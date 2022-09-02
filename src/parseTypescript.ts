@@ -2,11 +2,16 @@ import fs from "fs";
 import crypto from "crypto";
 import * as tsstruct from "ts-structure-parser";
 import { parse } from "comment-parser";
-import { TypeModel, Argument, TsStructure } from "./interface";
+import { TypeModel, Argument, TsStructure, JsonDescriptor } from "./interface";
+import { generateJsonDescriptor } from "./utils";
 
 function parseStruct2(
   structures: ReturnType<typeof tsstruct.parseStruct>[],
-  refClass: string
+  refClass: string,
+  protoStructure: {
+    file: string;
+    jsonDescriptor: JsonDescriptor;
+  }[]
 ): TsStructure {
   // find the structure that matches the refClass
   const structureId = structures.findIndex((st) => {
@@ -27,10 +32,33 @@ function parseStruct2(
   const tsStructure: TsStructure = {
     className: refClass,
     file: structure.name,
-    protoAs: [],
+    proto: [],
     methods: [],
     hasAuthorize: true,
     extends: [],
+  };
+
+  const addProto = (argType: string) => {
+    const pRef = argType.split(".")[0];
+    if (!pRef || tsStructure.proto.find((p) => p.className === pRef)) return;
+
+    const pStruct = protoStructure.find((p) => {
+      return Object.keys(p.jsonDescriptor.nested).includes(pRef);
+    });
+    if (!pStruct) {
+      throw new Error(
+        [
+          `the proto definition "${pRef}" referenced in the file`,
+          `${tsStructure.file} was not found in the list of`,
+          "proto files defined in the config file",
+        ].join(" ")
+      );
+    }
+    tsStructure.proto.push({
+      className: pRef,
+      file: pStruct.file,
+      jsonDescriptor: pStruct.jsonDescriptor,
+    });
   };
 
   // Determine the index of the class in the file
@@ -132,6 +160,9 @@ function parseStruct2(
     const retType = (method.returnType as unknown as TypeModel).typeName;
     const isVoid = retType === "void";
 
+    addProto(argType);
+    if (!isVoid) addProto(retType);
+
     // store results
     tsStructure.methods.push({
       name: method.name,
@@ -147,17 +178,18 @@ function parseStruct2(
     // check if the class extends
     tsStructure.extends = structure.classes[classId].extends.map((e) => {
       const { typeName: parentRefClass } = e as unknown as { typeName: string };
-      return parseStruct2(structures, parentRefClass);
+      return parseStruct2(structures, parentRefClass, protoStructure);
     });
   });
 
   return tsStructure;
 }
 
-export function parseTypescript(
+export async function parseTypescript(
   files: string[],
+  proto: string[],
   className: string
-): TsStructure {
+): Promise<TsStructure> {
   const structures = files.map((file) => {
     try {
       const decls = fs.readFileSync(file, "utf8");
@@ -168,5 +200,14 @@ export function parseTypescript(
     }
   });
 
-  return parseStruct2(structures, className);
+  const protoStructure = await Promise.all(
+    proto.map(async (p) => {
+      return {
+        file: p,
+        jsonDescriptor: await generateJsonDescriptor(p),
+      };
+    })
+  );
+
+  return parseStruct2(structures, className, protoStructure);
 }
