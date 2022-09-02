@@ -1,34 +1,19 @@
-import path from "path";
 import { TsStructure } from "./interface";
-import { getAllMethods } from "./utils";
+import { getAllMethods, simplifyFile } from "./utils";
 
 export function generateIndex(tsStructure: TsStructure, dirProject: string) {
   const { className, proto, hasAuthorize, file } = tsStructure;
   const maxReturnBuffer = 1024;
-
-  const simplifyFile = (f: string): string => {
-    // TODO: use replaceAll
-    let fileRef: string = path.relative(dirProject, f).replaceAll("\\", "/");
-    if (!fileRef.startsWith("./") && !fileRef.startsWith("../")) {
-      fileRef = `./${fileRef}`;
-    }
-    if (fileRef.endsWith(".ts")) {
-      fileRef = fileRef.substring(0, fileRef.length - 3);
-    } else if (fileRef.endsWith(".proto")) {
-      fileRef = fileRef.substring(0, fileRef.length - 6);
-    }
-    return fileRef;
-  };
 
   const allMethods = getAllMethods(tsStructure);
 
   return `import { System, Protobuf${
     hasAuthorize ? ", authority" : ""
   } } from "koinos-sdk-as";
-import { ${className} } from "${simplifyFile(file)}";${proto
+import { ${className} } from "${simplifyFile(file, dirProject)}";${proto
     .map((p) => {
       return `
-import { ${p.className} } from "${simplifyFile(p.file)}";`;
+import { ${p.className} } from "${simplifyFile(p.file, dirProject)}";`;
     })
     .join("")}
 

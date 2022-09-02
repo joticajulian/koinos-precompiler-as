@@ -29,7 +29,7 @@ async function main() {
 
   // generate interfaces
   const generateInterfaces = (ts: TsStructure) => {
-    const data = generateInferface(ts);
+    const data = generateInferface(ts, path.join(dir, `build/interfaces`));
     const outputFile = path.join(dir, `build/interfaces/I${ts.className}.ts`);
     fs.writeFileSync(outputFile, data);
     ts.extends.forEach((e) => generateInterfaces(e));

@@ -1,5 +1,20 @@
 import * as pbjs from "protobufjs-cli/pbjs";
+import path from "path";
 import { JsonDescriptor, TsStructure } from "./interface";
+
+export function simplifyFile(f: string, relativeTo: string): string {
+  // TODO: use replaceAll
+  let fileRef: string = path.relative(relativeTo, f).replaceAll("\\", "/");
+  if (!fileRef.startsWith("./") && !fileRef.startsWith("../")) {
+    fileRef = `./${fileRef}`;
+  }
+  if (fileRef.endsWith(".ts")) {
+    fileRef = fileRef.substring(0, fileRef.length - 3);
+  } else if (fileRef.endsWith(".proto")) {
+    fileRef = fileRef.substring(0, fileRef.length - 6);
+  }
+  return fileRef;
+};
 
 export function getAllMethods(
   ts: TsStructure,
