@@ -34,12 +34,20 @@ function parseStruct2(
     file: structure.name,
     proto: [],
     methods: [],
-    hasAuthorize: true,
+    hasAuthorize: false,
     extends: [],
   };
 
   const addProto = (argType: string) => {
     const pRef = argType.split(".")[0];
+
+    // check if it is using proto authority
+    if (pRef === "authority") {
+      tsStructure.hasAuthorize = true;
+      return;
+    }
+
+    // skip if there is no proto to add or if it is already included
     if (!pRef || tsStructure.proto.find((p) => p.className === pRef)) return;
 
     const pStruct = protoStructure.find((p) => {
@@ -101,7 +109,7 @@ function parseStruct2(
       );
     }
 
-    // check if has an @entryPoint. Otherwise calculate it
+    // check if has an @entrypoint. Otherwise calculate it
     let entryPoint: string;
     const tagEntryPoint = getTag("entrypoint");
     if (tagEntryPoint) {
@@ -134,7 +142,7 @@ function parseStruct2(
         .slice(0, 8)}`;
     }
 
-    // check if the function is @readOnly
+    // check if the function is @readonly
     let readOnly: boolean;
     const tagReadOnly = getTag("readonly");
     if (tagReadOnly) {
@@ -160,8 +168,10 @@ function parseStruct2(
     const retType = (method.returnType as unknown as TypeModel).typeName;
     const isVoid = retType === "void";
 
-    addProto(argType);
-    if (!isVoid) addProto(retType);
+    if (!getTag("ignoreproto")) {
+      addProto(argType);
+      if (!isVoid) addProto(retType);
+    }
 
     // store results
     tsStructure.methods.push({
