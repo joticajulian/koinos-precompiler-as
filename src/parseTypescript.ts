@@ -2,6 +2,7 @@ import fs from "fs";
 import crypto from "crypto";
 import * as tsstruct from "ts-structure-parser";
 import { parse } from "comment-parser";
+import { Root, INamespace } from "protobufjs/light";
 import { TypeModel, Argument, TsStructure, JsonDescriptor } from "./interface";
 import { generateJsonDescriptor } from "./utils";
 
@@ -49,9 +50,13 @@ function parseStruct2(
 
     // skip if there is no proto to add or if it is already included
     if (!pRef || tsStructure.proto.find((p) => p.className === pRef)) return;
-
     const pStruct = protoStructure.find((p) => {
-      return Object.keys(p.jsonDescriptor.nested).includes(pRef);
+      try {
+        Root.fromJSON(p.jsonDescriptor as unknown as INamespace).lookup(pRef);
+        return true;
+      } catch (error) {
+        return false;
+      }
     });
     if (!pStruct) {
       throw new Error(

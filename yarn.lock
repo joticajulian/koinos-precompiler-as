@@ -1055,6 +1055,11 @@ array.prototype.flatmap@^1.2.5:
     es-abstract "^1.19.2"
     es-shim-unscopables "^1.0.0"
 
+as-proto@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/as-proto/-/as-proto-0.4.0.tgz#6ca60a74b981beb9ef1b94911e1a6383290a7489"
+  integrity sha512-mYpDRsJj9vm2Rj88tvjE1r9fd2gW4f3ShsEsciFZA3QKcyMB2GiOzANNtoixmqk1Vs8Pahsi+5RivmPeR5GmTQ==
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
