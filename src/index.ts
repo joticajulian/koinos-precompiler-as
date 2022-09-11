@@ -14,17 +14,26 @@ async function main() {
     configFile = path.join(configFile, "koinos.config.js");
   const fullPathConfigFile = path.join(process.cwd(), configFile);
   const { dir } = path.parse(fullPathConfigFile);
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const config = require(fullPathConfigFile) as PrecompilerConfig;
-  const files = config.files.map((f) => path.join(dir, f));
-  const proto = config.proto.map((p) => path.join(dir, p));
-  const tsStructure = await parseTypescript(files, proto, config.class);
 
+  // define paths
   const sourceDir = path.join(dir, "src");
   const koinosProtoDir = path.join(dir, "..", "koinos-proto");
   const buildDir = path.join(dir, "build");
 
-  // prepare build folder
+  // copy source files
+  fse.copySync(sourceDir, buildDir);
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const config = require(fullPathConfigFile) as PrecompilerConfig;
+  const files = config.files.map((f) =>
+    path.join(dir, f).replace(sourceDir, buildDir)
+  );
+  const proto = config.proto.map((p) =>
+    path.join(dir, p).replace(sourceDir, buildDir)
+  );
+  const tsStructure = await parseTypescript(files, proto, config.class);
+
+  // prepare subfolders
   const interfacesDir = path.join(buildDir, "interfaces");
   if (!fs.existsSync(interfacesDir))
     fs.mkdirSync(interfacesDir, { recursive: true });
@@ -52,15 +61,13 @@ async function main() {
   fs.writeFileSync(outputFileAbi, JSON.stringify(abiData, null, 2));
 
   // copy protos
-  fse.copySync(path.join(sourceDir, "proto"), path.join(buildDir, "proto"));
   fse.copySync(
     path.join(koinosProtoDir, "koinos"),
     path.join(buildDir, "proto/koinos")
   );
 
   // generate proto ts
-  const proto2 = proto.map((p) => p.replace(sourceDir, buildDir));
-  generateProto(proto2, path.join(buildDir, "proto"));
+  generateProto(proto, path.join(buildDir, "proto"));
   console.log(`files generated at ${buildDir}`);
 }
 

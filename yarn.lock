@@ -718,6 +718,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/humps@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/humps/-/humps-2.0.2.tgz#6643e2beb13e0e7a22c65b2128b4315a727ecbe0"
+  integrity sha512-FuyQoVNSW6mjSLxLVRq8YK1pi8P5zyL2pahEuCtMqlbmV4jyWYITz4eE2fZIErNovIfKU32tPbCl44VbOUaEiw==
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.4.tgz#8467d4b3c087805d63580480890791277ce35c44"
@@ -1061,6 +1066,18 @@ array.prototype.flatmap@^1.2.5:
     define-properties "^1.1.3"
     es-abstract "^1.19.2"
     es-shim-unscopables "^1.0.0"
+
+as-proto-gen@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/as-proto-gen/-/as-proto-gen-0.4.0.tgz#b7a81774204211aecbb2b597aa08c159910cce0d"
+  integrity sha512-lU3zelDFheXKjErc5sUqPTCy94294W+lzr3YeO4+wBEohNxn1kaZ7aOl21zrvTMB8wa/cULdAIxDNZH1jQJU9g==
+  dependencies:
+    "@types/humps" "^2.0.2"
+    fs-extra "^10.1.0"
+    google-protobuf "^3.19.2"
+    humps "^2.0.1"
+    prettier "^2.5.0"
+    ts-poet "^4.9.0"
 
 as-proto@^0.4.0:
   version "0.4.0"
@@ -2125,6 +2142,11 @@ globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
+google-protobuf@^3.19.2:
+  version "3.21.0"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.21.0.tgz#8dfa3fca16218618d373d414d3c1139e28034d6e"
+  integrity sha512-byR7MBTK4tZ5PZEb+u5ZTzpt4SfrTxv5682MjPlHN16XeqgZE2/8HOIWeiXe8JKnT9OVbtBGhbq8mtvkK8cd5g==
+
 graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@^4.2.0, graceful-fs@^4.2.4, graceful-fs@^4.2.9:
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
@@ -2204,6 +2226,11 @@ human-signals@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
+
+humps@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/humps/-/humps-2.0.1.tgz#dd02ea6081bd0568dc5d073184463957ba9ef9aa"
+  integrity sha512-E0eIbrFWUhwfXJmsbdjRQFQPrl5pTEoKlz163j1mTqqUnU9PgR4AgB8AIITzuB3vLBdxZXyZ9TDIrwB2OASz4g==
 
 iconv-lite@0.4.24:
   version "0.4.24"
@@ -3503,7 +3530,7 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@^2.5.1:
+prettier@^2.5.0, prettier@^2.5.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
   integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
@@ -4032,6 +4059,14 @@ ts-node@^10.9.1:
     make-error "^1.1.1"
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
+
+ts-poet@^4.9.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/ts-poet/-/ts-poet-4.15.0.tgz#637145fa554d3b27c56541578df0ce08cd9eb328"
+  integrity sha512-sLLR8yQBvHzi9d4R1F4pd+AzQxBfzOSSjfxiJxQhkUoH5bL7RsAC6wgvtVUQdGqiCsyS9rT6/8X2FI7ipdir5g==
+  dependencies:
+    lodash "^4.17.15"
+    prettier "^2.5.1"
 
 ts-structure-model@0.0.1:
   version "0.0.1"
