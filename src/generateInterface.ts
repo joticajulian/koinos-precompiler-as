@@ -1,7 +1,10 @@
 import { TsStructure } from "./interface";
 import { simplifyFile } from "./utils";
 
-export function generateInferface(tsStructure: TsStructure, dirInterfaces: string): string {
+export function generateInferface(
+  tsStructure: TsStructure,
+  dirInterfaces: string
+): string {
   const { className, methods, hasAuthorize } = tsStructure;
 
   return `import { System, Protobuf${
@@ -11,11 +14,12 @@ export function generateInferface(tsStructure: TsStructure, dirInterfaces: strin
       return `
 import { ${e.className} } from "./I${e.className}";`;
     })
-    .join("")}${tsStructure.proto.map((p) => {
-        return `
+    .join("")}${tsStructure.proto
+    .map((p) => {
+      return `
 import { ${p.className} } from "${simplifyFile(p.file, dirInterfaces)}";`;
-      })
-      .join("")}
+    })
+    .join("")}
 
 export class ${className}${
     tsStructure.extends.length > 0

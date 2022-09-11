@@ -14,7 +14,7 @@ export function simplifyFile(f: string, relativeTo: string): string {
     fileRef = fileRef.substring(0, fileRef.length - 6);
   }
   return fileRef;
-};
+}
 
 export function getAllMethods(
   ts: TsStructure,
