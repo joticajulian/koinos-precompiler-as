@@ -15,22 +15,31 @@ async function main() {
   const fullPathConfigFile = path.join(process.cwd(), configFile);
   const { dir } = path.parse(fullPathConfigFile);
 
-  // define paths
-  const sourceDir = path.join(dir, "src");
-  const koinosProtoDir = path.join(dir, "..", "koinos-proto");
-  const buildDir = path.join(dir, "build");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const config = require(fullPathConfigFile) as PrecompilerConfig;
+  const sourceDir = config.sourceDir
+    ? path.join(dir, config.sourceDir)
+    : path.join(dir, "src");
+  const buildDir = config.buildDir
+    ? path.join(dir, config.buildDir)
+    : path.join(dir, "build");
+  const koinosProtoDir = config.koinosProtoDir
+    ? path.join(dir, config.koinosProtoDir)
+    : path.join(dir, "node_modules/koinos-precompiler-as/koinos-proto/koinos");
 
   // copy source files
   fse.copySync(sourceDir, buildDir);
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const config = require(fullPathConfigFile) as PrecompilerConfig;
-  const files = config.files.map((f) =>
-    path.join(dir, f).replace(sourceDir, buildDir)
-  );
-  const proto = config.proto.map((p) =>
-    path.join(dir, p).replace(sourceDir, buildDir)
-  );
+  // copy koinos protos
+  fse.copySync(koinosProtoDir, path.join(buildDir, "proto/koinos"));
+
+  const proto = config.proto.map((p) => path.join(buildDir, p));
+  const files = config.files.map((f) => path.join(buildDir, f));
+
+  // generate proto ts
+  generateProto(proto, path.join(buildDir, "proto"));
+  console.log(`files generated at ${buildDir}`);
+
   const tsStructure = await parseTypescript(files, proto, config.class);
 
   // prepare subfolders
@@ -39,7 +48,7 @@ async function main() {
     fs.mkdirSync(interfacesDir, { recursive: true });
 
   // generate index file
-  const indexData = generateIndex(tsStructure, dir);
+  const indexData = generateIndex(tsStructure, buildDir);
   const outputFileIndex = path.join(buildDir, "index.ts");
   fs.writeFileSync(outputFileIndex, indexData);
 
@@ -59,16 +68,6 @@ async function main() {
     `${config.class.toLocaleLowerCase()}-abi.json`
   );
   fs.writeFileSync(outputFileAbi, JSON.stringify(abiData, null, 2));
-
-  // copy protos
-  fse.copySync(
-    path.join(koinosProtoDir, "koinos"),
-    path.join(buildDir, "proto/koinos")
-  );
-
-  // generate proto ts
-  generateProto(proto, path.join(buildDir, "proto"));
-  console.log(`files generated at ${buildDir}`);
 }
 
 main()

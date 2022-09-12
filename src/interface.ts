@@ -1,7 +1,36 @@
 export interface PrecompilerConfig {
-  proto: string[];
+  /**
+   * Main class of the project
+   */
   class: string;
+
+  /**
+   * Source folder (relative to the root of the project).
+   * By default it is "./src"
+   */
+  sourceDir: string;
+
+  /**
+   * Build folder (relative to the root of the project).
+   * By default it is "./build"
+   */
+  buildDir: string;
+
+  /**
+   * List of TS files relative to the source folder
+   */
   files: string[];
+
+  /**
+   * List of proto files relative to the source folder
+   */
+  proto: string[];
+
+  /**
+   * Path to the common proto files of koinos. By default
+   * it is "./node_modules/koinos-precompiler-as/koinos-proto/koinos"
+   */
+  koinosProtoDir: string;
 }
 
 export interface Abi {
