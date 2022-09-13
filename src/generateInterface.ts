@@ -9,7 +9,7 @@ export function generateInferface(
 
   return `import { System, Protobuf${
     hasAuthorize ? ", authority" : ""
-  } } from "koinos-sdk-as";${tsStructure.extends
+  } } from "@koinos/sdk-as";${tsStructure.extends
     .map((e) => {
       return `
 import { ${e.className} } from "./I${e.className}";`;
@@ -46,13 +46,14 @@ export class ${className}${
         ? `Protobuf.encode(args, ${m.argType}.encode);`
         : "new Uint8Array(0);"
     }
-    ${
-      m.isVoid ? "" : "const resultBuffer = "
-    }System.callContract(this._contractId, ${m.entryPoint}, argsBuffer);
+    ${m.isVoid ? "" : "const callRes = "}System.call(this._contractId, ${
+        m.entryPoint
+      }, argsBuffer);
+    System.require(callRes.code == 0, "failed to call '${m.name}' function");
     ${
       m.isVoid
         ? "return;"
-        : `return Protobuf.decode<${m.retType}>(resultBuffer, ${m.retType}.decode);`
+        : `return Protobuf.decode<${m.retType}>(callRes.res.object!, ${m.retType}.decode);`
     }
   }`;
     })

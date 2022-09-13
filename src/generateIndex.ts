@@ -9,7 +9,7 @@ export function generateIndex(tsStructure: TsStructure, dirProject: string) {
 
   return `import { System, Protobuf${
     hasAuthorize ? ", authority" : ""
-  } } from "koinos-sdk-as";
+  } } from "@koinos/sdk-as";
 import { ${className} } from "${simplifyFile(file, dirProject)}";${proto
     .map((p) => {
       return `
@@ -17,12 +17,11 @@ import { ${p.className} } from "${simplifyFile(p.file, dirProject)}";`;
     })
     .join("")}
 
-const entryPoint = System.getEntryPoint();
-const argsBuffer = System.getContractArguments();
+const contractArgs = System.getArguments();
 let returnBuffer = new Uint8Array(${maxReturnBuffer});
 const contract = new ${className}();
 
-switch (entryPoint) {
+switch (contractArgs.entry_point) {
   ${allMethods
     .map((t) => {
       return `/* class ${t.className} */
@@ -33,7 +32,7 @@ switch (entryPoint) {
   case ${m.entryPoint}: {${
         m.argType
           ? `
-    const args = Protobuf.decode<${m.argType}>(argsBuffer, ${m.argType}.decode);`
+    const args = Protobuf.decode<${m.argType}>(contractArgs.args, ${m.argType}.decode);`
           : ""
       }
     ${m.isVoid ? "" : "const result = "}contract.${m.name}(${
@@ -52,13 +51,12 @@ switch (entryPoint) {
     .join("")}`;
     })
     .join("")}default: {
-    System.exitContract(1);
+    System.exit(1);
     break;
   }
 }
 
-System.setContractResult(returnBuffer);
-System.exitContract(0);
+System.exit(0, returnBuffer);
 `;
 }
 
