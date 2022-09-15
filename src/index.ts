@@ -7,6 +7,7 @@ import { generateIndex } from "./generateIndex";
 import { generateInferface } from "./generateInterface";
 import { generateAbi } from "./generateAbi";
 import { generateProto } from "./generateProto";
+import compileWasm from "./compileWasm";
 
 async function main() {
   let [configFile] = process.argv.slice(2);
@@ -68,6 +69,9 @@ async function main() {
     `${config.class.toLocaleLowerCase()}-abi.json`
   );
   fs.writeFileSync(outputFileAbi, JSON.stringify(abiData, null, 2));
+
+  // compile wasm
+  await compileWasm(dir, buildDir);
 }
 
 main()
