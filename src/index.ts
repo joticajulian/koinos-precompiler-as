@@ -1,7 +1,8 @@
 import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
-import { PrecompilerConfig, TsStructure } from "./interface";
+import { TsStructure } from "./interface";
+import { getConfig } from "./getConfig";
 import { parseTypescript } from "./parseTypescript";
 import { generateIndex } from "./generateIndex";
 import { generateInferface } from "./generateInterface";
@@ -10,22 +11,14 @@ import { generateProto } from "./generateProto";
 
 async function main() {
   let [configFile] = process.argv.slice(2);
-  if (!configFile.endsWith(".js"))
-    configFile = path.join(configFile, "koinos.config.js");
-  const fullPathConfigFile = path.join(process.cwd(), configFile);
-  const { dir } = path.parse(fullPathConfigFile);
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const config = require(fullPathConfigFile) as PrecompilerConfig;
-  const sourceDir = config.sourceDir
-    ? path.join(dir, config.sourceDir)
-    : path.join(dir, "src");
-  const buildDir = config.buildDir
-    ? path.join(dir, config.buildDir)
-    : path.join(dir, "build");
-  const koinosProtoDir = config.koinosProtoDir
-    ? path.join(dir, config.koinosProtoDir)
-    : path.join(dir, "node_modules/koinos-precompiler-as/koinos-proto/koinos");
+  const {
+    sourceDir,
+    buildDir,
+    koinosProtoDir,
+    proto,
+    files,
+    class: cclass,
+  } = getConfig(configFile);
 
   // copy source files
   fse.copySync(sourceDir, buildDir);
@@ -33,14 +26,11 @@ async function main() {
   // copy koinos protos
   fse.copySync(koinosProtoDir, path.join(buildDir, "proto/koinos"));
 
-  const proto = config.proto.map((p) => path.join(buildDir, p));
-  const files = config.files.map((f) => path.join(buildDir, f));
-
   // generate proto ts
   generateProto(proto, path.join(buildDir, "proto"));
   console.log(`files generated at ${buildDir}`);
 
-  const tsStructure = await parseTypescript(files, proto, config.class);
+  const tsStructure = await parseTypescript(files, proto, cclass);
 
   // prepare subfolders
   const interfacesDir = path.join(buildDir, "interfaces");
@@ -65,7 +55,7 @@ async function main() {
   const abiData = await generateAbi(tsStructure, proto);
   const outputFileAbi = path.join(
     buildDir,
-    `${config.class.toLocaleLowerCase()}-abi.json`
+    `${cclass.toLocaleLowerCase()}-abi.json`
   );
   fs.writeFileSync(outputFileAbi, JSON.stringify(abiData, null, 2));
 }
