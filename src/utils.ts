@@ -3,8 +3,7 @@ import path from "path";
 import { JsonDescriptor, TsStructure } from "./interface";
 
 export function simplifyFile(f: string, relativeTo: string): string {
-  // TODO: use replaceAll
-  let fileRef: string = path.relative(relativeTo, f).replaceAll("\\", "/");
+  let fileRef: string = path.relative(relativeTo, f).replace(/\\/g, "/");
   if (!fileRef.startsWith("./") && !fileRef.startsWith("../")) {
     fileRef = `./${fileRef}`;
   }
