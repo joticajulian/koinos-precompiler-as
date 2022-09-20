@@ -7,7 +7,7 @@ export function generateInferface(
 ): string {
   const { className, methods, hasAuthorize } = tsStructure;
 
-  return `import { System, Protobuf${
+  return `import { System, Protobuf, StringBytes${
     hasAuthorize ? ", authority" : ""
   } } from "@koinos/sdk-as";${tsStructure.extends
     .map((e) => {
@@ -46,10 +46,13 @@ export class ${className}${
         ? `Protobuf.encode(args, ${m.argType}.encode);`
         : "new Uint8Array(0);"
     }
-    ${m.isVoid ? "" : "const callRes = "}System.call(this._contractId, ${
-        m.entryPoint
-      }, argsBuffer);
-    System.require(callRes.code == 0, "failed to call '${m.name}' function");
+    const callRes = System.call(this._contractId, ${m.entryPoint}, argsBuffer);
+    if (callRes.code != 0) {
+      const errorMessage = \`failed to call '${className}.${
+        m.name
+      }': \${callRes.res.error?.message}\`;
+      System.exit(callRes.code, StringBytes.stringToBytes(errorMessage));
+    }
     ${
       m.isVoid
         ? "return;"

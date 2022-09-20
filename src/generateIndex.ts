@@ -17,11 +17,11 @@ import { ${p.className} } from "${simplifyFile(p.file, dirProject)}";`;
     })
     .join("")}
 
-const contractArgs = System.getArguments();
-let returnBuffer = new Uint8Array(${maxReturnBuffer});
 const contract = new ${className}();
+contract.callArgs = System.getArguments();
+let returnBuffer = new Uint8Array(${maxReturnBuffer});
 
-switch (contractArgs.entry_point) {
+switch (contract.callArgs!.entry_point) {
   ${allMethods
     .map((t) => {
       return `/* class ${t.className} */
@@ -32,7 +32,7 @@ switch (contractArgs.entry_point) {
   case ${m.entryPoint}: {${
         m.argType
           ? `
-    const args = Protobuf.decode<${m.argType}>(contractArgs.args, ${m.argType}.decode);`
+    const args = Protobuf.decode<${m.argType}>(contract.callArgs!.args, ${m.argType}.decode);`
           : ""
       }
     ${m.isVoid ? "" : "const result = "}contract.${m.name}(${
