@@ -38,15 +38,22 @@ export const generateJsonDescriptor = async (
 ): Promise<JsonDescriptor> => {
   return new Promise((resolve, reject) => {
     const pFiles = Array.isArray(protoFiles) ? protoFiles : [protoFiles];
-    pbjs.main(["--keep-case", "--target", "json", ...pFiles], (err, output) => {
-      if (err) reject(err);
-      if (output) {
-        resolve(JSON.parse(output) as JsonDescriptor);
-      } else {
-        resolve({
-          nested: {},
-        });
+    const protoDir = path.parse(pFiles[0]).dir;
+    pbjs.main(
+      ["--keep-case", "--path", protoDir, "--target", "json", ...pFiles],
+      (err, output) => {
+        if (err) reject(err);
+        if (output) {
+          const jsonDescriptor = JSON.parse(output) as JsonDescriptor;
+          delete jsonDescriptor.nested.koinos;
+          delete jsonDescriptor.nested.google;
+          resolve(jsonDescriptor);
+        } else {
+          resolve({
+            nested: {},
+          });
+        }
       }
-    });
+    );
   });
 };

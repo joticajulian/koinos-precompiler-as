@@ -11,7 +11,8 @@
     "url": "https://github.com/joticajulian/koinos-precompiler-as/issues"
   },
   "files": [
-    "lib"
+    "lib",
+    "koinos-proto"
   ],
   "main": "./lib/index.js",
   "bin": {
