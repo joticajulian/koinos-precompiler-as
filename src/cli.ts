@@ -63,6 +63,10 @@ async function main() {
 
     // generate proto ts
     generateProto(proto, path.join(buildDir, "proto"));
+    proto.forEach((p) => {
+      const pRelative = path.relative(buildDir, p);
+      fs.copyFileSync(p, path.join(sourceDir, pRelative));
+    });
     console.log(`proto files generated at ${path.join(buildDir, "proto")}`);
   }
 

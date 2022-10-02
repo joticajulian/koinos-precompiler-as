@@ -2,10 +2,10 @@ import path from "path";
 import { PrecompilerConfig } from "./interface";
 
 export function getConfig(configFile: string): PrecompilerConfig {
-  let _configFile = configFile;
+  let configFileComplete = configFile;
   if (!configFile.endsWith(".js"))
-    _configFile = path.join(configFile, "koinos.config.js");
-  const fullPathConfigFile = path.join(process.cwd(), _configFile);
+    configFileComplete = path.join(configFile, "koinos.config.js");
+  const fullPathConfigFile = path.join(process.cwd(), configFileComplete);
   const { dir } = path.parse(fullPathConfigFile);
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
