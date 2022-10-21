@@ -3,7 +3,7 @@ import path from "path";
 import crypto from "crypto";
 import { execSync } from "child_process";
 import { Abi, TsStructure } from "./interface";
-import { generateJsonDescriptor, getAllMethods } from "./utils";
+import { generateJsonDescriptor, combineTsStructures } from "./utils";
 
 const generateBinaryDescriptor = (protoFilesPaths: string[]): string => {
   const pbFilePath = `./temp-${crypto.randomBytes(5).toString("hex")}.pb`;
@@ -31,9 +31,9 @@ export async function generateAbi(
     koilib_types: {},
   };
 
-  const allMethods = getAllMethods(tsStructure);
+  const tsCombined = combineTsStructures(tsStructure);
 
-  allMethods.forEach((ts) => {
+  tsCombined.forEach((ts) => {
     ts.methods.forEach((m) => {
       abiData.methods[m.name] = {
         argument: m.argType,
