@@ -51,12 +51,9 @@ function parseStruct2(
     // skip if there is no proto to add or if it is already included
     if (!pRef || tsStructure.proto.find((p) => p.className === pRef)) return;
     const pStruct = protoStructure.find((p) => {
-      try {
-        Root.fromJSON(p.jsonDescriptor as unknown as INamespace).lookup(pRef);
-        return true;
-      } catch (error) {
-        return false;
-      }
+      return !!Root.fromJSON(p.jsonDescriptor as unknown as INamespace).lookup(
+        pRef
+      );
     });
     if (!pStruct) {
       throw new Error(

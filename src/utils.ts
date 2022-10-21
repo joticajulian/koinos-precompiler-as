@@ -15,19 +15,23 @@ export function simplifyFile(f: string, relativeTo: string): string {
   return fileRef;
 }
 
-export function getAllMethods(
+export function combineTsStructures(
   ts: TsStructure,
-  entryPoints: string[] = []
+  entryPoints: string[] = [],
+  proto: TsStructure["proto"] = []
 ): TsStructure[] {
   const allMethods: TsStructure[] = [];
   const methodsToAdd = ts.methods.filter(
     (m) => !entryPoints.includes(m.entryPoint)
   );
-  if (methodsToAdd.length > 0)
-    allMethods.push({ ...ts, methods: methodsToAdd });
+  const protosToAdd = ts.proto.filter(
+    (p) => !proto.find((pp) => p.file === pp.file)
+  );
+  allMethods.push({ ...ts, methods: methodsToAdd, proto: protosToAdd });
   ts.methods.forEach((m) => entryPoints.push(m.entryPoint));
+  ts.proto.forEach((p) => proto.push(p));
   ts.extends.forEach((e) => {
-    allMethods.push(...getAllMethods(e, entryPoints));
+    allMethods.push(...combineTsStructures(e, entryPoints, proto));
   });
 
   return allMethods;

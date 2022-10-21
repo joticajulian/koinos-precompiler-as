@@ -1,19 +1,23 @@
 import { TsStructure } from "./interface";
-import { getAllMethods, simplifyFile } from "./utils";
+import { combineTsStructures, simplifyFile } from "./utils";
 
 export function generateIndex(tsStructure: TsStructure, dirProject: string) {
-  const { className, proto, hasAuthorize, file } = tsStructure;
+  const { className, hasAuthorize, file } = tsStructure;
   const maxReturnBuffer = 1024;
 
-  const allMethods = getAllMethods(tsStructure);
+  const tsCombined = combineTsStructures(tsStructure);
 
   return `import { System, Protobuf${
     hasAuthorize ? ", authority" : ""
   } } from "@koinos/sdk-as";
-import { ${className} } from "${simplifyFile(file, dirProject)}";${proto
-    .map((p) => {
-      return `
+import { ${className} } from "${simplifyFile(file, dirProject)}";${tsCombined
+    .map((t) => {
+      return t.proto
+        .map((p) => {
+          return `
 import { ${p.className} } from "${simplifyFile(p.file, dirProject)}";`;
+        })
+        .join("");
     })
     .join("")}
 
@@ -22,7 +26,7 @@ contract.callArgs = System.getArguments();
 let returnBuffer = new Uint8Array(${maxReturnBuffer});
 
 switch (contract.callArgs!.entry_point) {
-  ${allMethods
+  ${tsCombined
     .map((t) => {
       return `/* class ${t.className} */
     
