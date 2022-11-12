@@ -50,7 +50,7 @@ export class ${className}${
     if (callRes.code != 0) {
       const errorMessage = \`failed to call '${className}.${
         m.name
-      }': \${callRes.res.error?.message}\`;
+      }': \${callRes.res.error ? callRes.res.error.message : ""}\`;
       System.exit(callRes.code, StringBytes.stringToBytes(errorMessage));
     }
     ${
