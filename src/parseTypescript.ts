@@ -167,6 +167,14 @@ function parseStruct2(
       method.arguments.length === 0
         ? ""
         : (method.arguments[0] as unknown as Argument).type.typeName;
+    if (!method.returnType) {
+      throw new Error(
+        [
+          `no returnType defined for method "${method.name}"`,
+          ` in class "${refClass}"`,
+        ].join(" ")
+      );
+    }
     const retType = (method.returnType as unknown as TypeModel).typeName;
     const isVoid = retType === "void";
 
