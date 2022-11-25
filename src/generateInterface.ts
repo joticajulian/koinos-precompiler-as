@@ -56,7 +56,8 @@ export class ${className}${
     ${
       m.isVoid
         ? "return;"
-        : `return Protobuf.decode<${m.retType}>(callRes.res.object!, ${m.retType}.decode);`
+        : `if (!callRes.res.object) return new ${m.retType}();
+    return Protobuf.decode<${m.retType}>(callRes.res.object!, ${m.retType}.decode);`
     }
   }`;
     })
