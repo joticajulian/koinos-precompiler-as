@@ -18,7 +18,8 @@ export function simplifyFile(f: string, relativeTo: string): string {
 export function combineTsStructures(
   ts: TsStructure,
   entryPoints: string[] = [],
-  proto: TsStructure["proto"] = []
+  proto: TsStructure["proto"] = [],
+  events: TsStructure["events"] = []
 ): TsStructure[] {
   const allMethods: TsStructure[] = [];
   const methodsToAdd = ts.methods.filter(
@@ -27,11 +28,19 @@ export function combineTsStructures(
   const protosToAdd = ts.proto.filter(
     (p) => !proto.find((pp) => p.file === pp.file)
   );
-  allMethods.push({ ...ts, methods: methodsToAdd, proto: protosToAdd });
+  const eventsToAdd = ts.events.filter(
+    (e) => !events.find((ee) => e.name === ee.name)
+  );
+  allMethods.push({
+    ...ts,
+    methods: methodsToAdd,
+    proto: protosToAdd,
+    events: eventsToAdd,
+  });
   ts.methods.forEach((m) => entryPoints.push(m.entryPoint));
   ts.proto.forEach((p) => proto.push(p));
   ts.extends.forEach((e) => {
-    allMethods.push(...combineTsStructures(e, entryPoints, proto));
+    allMethods.push(...combineTsStructures(e, entryPoints, proto, events));
   });
 
   return allMethods;

@@ -45,6 +45,10 @@ export async function generateAbi(
         "read-only": m.readOnly,
       };
     });
+    ts.events.forEach((e) => {
+      if (!abiData.events) abiData.events = {};
+      abiData.events[e.name] = { argument: e.argument };
+    });
   });
 
   abiData.koilib_types = await generateJsonDescriptor(protoFiles);

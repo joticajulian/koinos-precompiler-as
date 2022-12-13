@@ -35,6 +35,7 @@ function parseStruct2(
     file: structure.name,
     proto: [],
     methods: [],
+    events: [],
     hasAuthorize: false,
     extends: [],
   };
@@ -182,6 +183,17 @@ function parseStruct2(
       addProto(argType);
       if (!isVoid) addProto(retType);
     }
+
+    // add events
+    const tagsEvent = comment.tags.filter(
+      (t) => t.tag.toLocaleLowerCase() === "event"
+    );
+    tagsEvent.forEach((tagEvent) => {
+      tsStructure.events.push({
+        name: tagEvent.name,
+        argument: tagEvent.description,
+      });
+    });
 
     // store results
     tsStructure.methods.push({

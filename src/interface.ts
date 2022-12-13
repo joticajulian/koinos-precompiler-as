@@ -45,6 +45,12 @@ export interface Abi {
       description?: string;
     };
   };
+  events?: {
+    [x: string]: {
+      argument?: string;
+      description?: string;
+    };
+  };
   types: string;
   koilib_types: unknown;
 }
@@ -72,6 +78,10 @@ export interface TsStructure {
     argType: string;
     retType: string;
     isVoid: boolean;
+  }[];
+  events: {
+    name: string;
+    argument: string;
   }[];
   hasAuthorize: boolean;
   extends: TsStructure[];
