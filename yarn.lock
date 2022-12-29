@@ -1079,10 +1079,10 @@ as-proto-gen@^0.4.0:
     prettier "^2.5.0"
     ts-poet "^4.9.0"
 
-as-proto@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/as-proto/-/as-proto-0.4.0.tgz#6ca60a74b981beb9ef1b94911e1a6383290a7489"
-  integrity sha512-mYpDRsJj9vm2Rj88tvjE1r9fd2gW4f3ShsEsciFZA3QKcyMB2GiOzANNtoixmqk1Vs8Pahsi+5RivmPeR5GmTQ==
+"as-proto@npm:@koinos/as-proto@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@koinos/as-proto/-/as-proto-1.0.0.tgz#9230c619f272b76001d8e37a1e1eb9bd1a3a3bba"
+  integrity sha512-ZzsGMCSudVjJ4sItFnwlATZhpQKwoOIMFkkBrj3q5gv6JwaFLurgWqt95fl/lujYjaXeomJ+qZjcjSL4F5OymA==
 
 asynckit@^0.4.0:
   version "0.4.0"
