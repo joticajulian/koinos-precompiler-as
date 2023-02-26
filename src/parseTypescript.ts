@@ -1,6 +1,6 @@
 import fs from "fs";
 import crypto from "crypto";
-import * as tsstruct from "ts-structure-parser";
+import * as tsstruct from "koinos-ts-structure-parser";
 import { parse } from "comment-parser";
 import { Root, INamespace } from "protobufjs/light";
 import { TypeModel, Argument, TsStructure, JsonDescriptor } from "./interface";
