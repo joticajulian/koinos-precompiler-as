@@ -1,6 +1,6 @@
 {
   "name": "koinos-precompiler-as",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "generator of main.ts file and ABI for smart contracts in koinos",
   "author": "Julian Gonzalez",
   "repository": {
