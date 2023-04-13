@@ -8,9 +8,10 @@ export function generateProto(protoFiles: string[], buildDir: string): void {
       [
         "yarn protoc",
         "--plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen",
-        `--proto_path=${path.parse(protoFile).dir}`,
+        `--proto_path=${path.parse(protoFiles[0]).dir}`,
         `--as_out=${buildDir}`,
         protoFile,
+        // `${path.parse(protoFiles[0]).dir}/*.proto`,
       ].join(" ")
     );
   });

@@ -236,7 +236,7 @@ export async function parseTypescript(
     proto.map(async (p) => {
       return {
         file: p,
-        jsonDescriptor: await generateJsonDescriptor(p),
+        jsonDescriptor: await generateJsonDescriptor(proto),
       };
     })
   );
