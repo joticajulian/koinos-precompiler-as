@@ -3805,10 +3805,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-koinos-ts-structure-parser@^0.0.20:
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/koinos-ts-structure-parser/-/koinos-ts-structure-parser-0.0.20.tgz#036afa6dcf7a74c73539de3e7f4812c7ad0b7744"
-  integrity sha512-0+hL5UC2oYlcuFx0bPTz7XBIqFBVNL7tIp29Q04K716rxn8RPtMTHl0QA/fUquVB2JE9vBy3VPnGGU/puwbYjw==
+koinos-ts-structure-parser@^0.0.21:
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/koinos-ts-structure-parser/-/koinos-ts-structure-parser-0.0.21.tgz#62cfaf6875707b87b9d826bb3ec78f70f415badb"
+  integrity sha512-3n5owGwiGJpkd8VTxlOIX3JX3gYVGR4DIANe+y+YaSmwYJoUcDYWT0VMGipMpVcXqkBLlOljRoVrpDuTQ2zs7w==
   dependencies:
     ts-structure-model "0.0.1"
     typescript "3.1.6"
