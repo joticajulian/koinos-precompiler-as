@@ -2,22 +2,32 @@ import { TsStructure } from "./interface";
 import { combineTsStructures, simplifyFile } from "./utils";
 
 export function generateIndex(tsStructure: TsStructure, dirProject: string) {
-  const { className, hasAuthorize, file } = tsStructure;
+  const { className, file } = tsStructure;
   const maxReturnBuffer = 1024;
 
   const tsCombined = combineTsStructures(tsStructure);
+  const imports = JSON.parse(
+    JSON.stringify(tsCombined[0].imports)
+  ) as TsStructure["imports"];
+  const sdkImport = imports.find((i) => i.dependency === "@koinos/sdk-as");
+  if (sdkImport) {
+    if (!sdkImport.modules.includes("System")) sdkImport.modules.push("System");
+    if (!sdkImport.modules.includes("Protobuf"))
+      sdkImport.modules.push("Protobuf");
+  } else {
+    imports.splice(0, 0, {
+      dependency: "@koinos/sdk-as",
+      modules: ["System", "Protobuf"],
+    });
+  }
 
-  return `import { System, Protobuf${
-    hasAuthorize ? ", authority" : ""
-  } } from "@koinos/sdk-as";
-import { ${className} } from "${simplifyFile(file, dirProject)}";${tsCombined
-    .map((t) => {
-      return t.proto
-        .map((p) => {
-          return `
-import { ${p.className} } from "${simplifyFile(p.file, dirProject)}";`;
-        })
-        .join("");
+  return `import { ${className} } from "${simplifyFile(
+    file,
+    dirProject
+  )}";${imports
+    .map((i) => {
+      return `
+import { ${i.modules.join(", ")} } from "${i.dependency}";`;
     })
     .join("")}
 

@@ -727,6 +727,14 @@
     as-proto "npm:@koinos/as-proto"
     assemblyscript "^0.19.22"
 
+"@koinosbox/contracts@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@koinosbox/contracts/-/contracts-1.0.12.tgz#4518ef032efb9487a8cb4ef64c64b5697cda7f28"
+  integrity sha512-JXFdGprQ61BETMhBTuskSWaK8mhDqugf8pw52isaQgvf1/6m5DF3tAI0wp7p4MXmwmcsuvDpL7pyCASEerAJSg==
+  dependencies:
+    koilib "^5.5.4"
+    koinos-precompiler-as "^0.4.3"
+
 "@multiformats/base-x@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@multiformats/base-x/-/base-x-4.0.1.tgz#95ff0fa58711789d53aefb2590a8b7a4e715d121"
@@ -737,7 +745,12 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.0.tgz#085fd70f6d7d9d109671090ccae1d3bec62554a1"
   integrity sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==
 
-"@noble/secp256k1@^1.5.5":
+"@noble/hashes@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.1.tgz#8831ef002114670c603c458ab8b11328406953a9"
+  integrity sha512-EbqwksQwz9xDRGfDST86whPBgM65E0OH/pCgqW0GBVzO22bNE+NuIbeTb714+IfSjU3aRk47EUvXIb5bTsenKA==
+
+"@noble/secp256k1@^1.5.5", "@noble/secp256k1@^1.7.1":
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/@noble/secp256k1/-/secp256k1-1.7.1.tgz#b251c70f824ce3ca7f8dc3df08d58f005cc0507c"
   integrity sha512-hOUk6AyBFmqVrv7k5WAw/LpszxVbj9gGN4JRkIX52fdFAj1UA61KXmZDvqVEm+pOyec3+fIeZB02LYa/pWOArw==
@@ -992,6 +1005,13 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
+
+"@roamin/koinos-pb-to-proto@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@roamin/koinos-pb-to-proto/-/koinos-pb-to-proto-0.0.3.tgz#7c8bb6c65ee3cfcb6e889f6a3969bed01647303a"
+  integrity sha512-FR7hOtTM+COIMPBXpR6gc1HlJvFzioGgbAod9h7QAF527ACCF6xQG5mNyTSM65PrpbUVu/SA51O4Itp9BvZlTg==
+  dependencies:
+    google-protobuf "^3.21.0"
 
 "@roamin/protoc@^2.4.0":
   version "2.4.0"
@@ -1957,6 +1977,13 @@ create-require@^1.1.0:
   resolved "https://registry.yarnpkg.com/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
+cross-fetch@^3.1.5:
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.8.tgz#0327eba65fd68a7d119f8fb2bf9334a1a7956f82"
+  integrity sha512-cvA+JwZoU0Xq+h6WkMvAUqPEYy92Obet6UdKLfW60qn99ftItKjB5T+BkyWOFWe2pUyfQ+IJHmpOTznqk1M6Kg==
+  dependencies:
+    node-fetch "^2.6.12"
+
 cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
@@ -2801,7 +2828,7 @@ google-protobuf@^3.19.2:
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.21.0.tgz#8dfa3fca16218618d373d414d3c1139e28034d6e"
   integrity sha512-byR7MBTK4tZ5PZEb+u5ZTzpt4SfrTxv5682MjPlHN16XeqgZE2/8HOIWeiXe8JKnT9OVbtBGhbq8mtvkK8cd5g==
 
-google-protobuf@^3.19.4:
+google-protobuf@^3.19.4, google-protobuf@^3.21.0:
   version "3.21.2"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.21.2.tgz#4580a2bea8bbb291ee579d1fefb14d6fa3070ea4"
   integrity sha512-3MSOYFO5U9mPGikIYCzK0SaThypfGgS6bHqrUGXG3DPHCrb+txNqeEcns1W0lkGfk0rCyNXm7xB9rMxnCiZOoA==
@@ -3805,10 +3832,45 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
+koilib@^5.5.4:
+  version "5.6.1"
+  resolved "https://registry.yarnpkg.com/koilib/-/koilib-5.6.1.tgz#72f61455959ce00c23ec19d99467cb75e999985b"
+  integrity sha512-Ulon6gOYIVf11XzQ18BwY/p6VHdQ3JyIgqgZ/RsATg/VuUUvWoZ8w4nPNBBMohPhXh5lmu/O1E/wQ8BGxfpEvg==
+  dependencies:
+    "@noble/hashes" "^1.3.1"
+    "@noble/secp256k1" "^1.7.1"
+    "@roamin/koinos-pb-to-proto" "^0.0.3"
+    cross-fetch "^3.1.5"
+    multibase "^4.0.6"
+    protobufjs "^7.2.4"
+
+koinos-precompiler-as@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/koinos-precompiler-as/-/koinos-precompiler-as-0.4.3.tgz#28e95232169091b3585e2bb5c10d0ad186957043"
+  integrity sha512-YrPgmtn2/pcVzof9VZxzMk9Z8NwDHKp3CDzkI1ZHbpOXEowxgWJ/2Kj5LYBoniexVaQJp04vYKLJDcTuU8WwaQ==
+  dependencies:
+    "@protobuf-ts/protoc" "^2.7.0"
+    as-proto "npm:@koinos/as-proto@1.0.0"
+    commander "^9.4.0"
+    comment-parser "^1.3.1"
+    fs-extra "^10.1.0"
+    koinos-ts-structure-parser "^0.0.21"
+    protobufjs "^7.0.0"
+    protobufjs-cli "^1.0.0"
+
 koinos-ts-structure-parser@^0.0.21:
   version "0.0.21"
   resolved "https://registry.yarnpkg.com/koinos-ts-structure-parser/-/koinos-ts-structure-parser-0.0.21.tgz#62cfaf6875707b87b9d826bb3ec78f70f415badb"
   integrity sha512-3n5owGwiGJpkd8VTxlOIX3JX3gYVGR4DIANe+y+YaSmwYJoUcDYWT0VMGipMpVcXqkBLlOljRoVrpDuTQ2zs7w==
+  dependencies:
+    ts-structure-model "0.0.1"
+    typescript "3.1.6"
+    underscore "^1.13.6"
+
+koinos-ts-structure-parser@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/koinos-ts-structure-parser/-/koinos-ts-structure-parser-0.1.1.tgz#760971a9193324ced54810d350710fa3323ab85f"
+  integrity sha512-QsZywax1FlNxedmv8DIWdOnygy2Tr/Csd1tKSg9fnVe2WaD50d7sx+pTrmDtoooQI2fuhyQYJVX4xosB55ZeqA==
   dependencies:
     ts-structure-model "0.0.1"
     typescript "3.1.6"
@@ -4300,6 +4362,13 @@ negotiator@^0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.3.tgz#58e323a72fedc0d6f9cd4d31fe49f51479590ccd"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
+
+node-fetch@^2.6.12:
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.12.tgz#02eb8e22074018e3d5a83016649d04df0e348fba"
+  integrity sha512-C/fGU2E8ToujUivIO0H+tpQ6HWo4eEmchoPIoXtxCrVghxdKq+QOHqEZW7tuP3KlV3bC8FRMO5nMCC7Zm1VP6g==
+  dependencies:
+    whatwg-url "^5.0.0"
 
 node-gyp@^9.0.0, node-gyp@^9.1.0:
   version "9.3.1"
@@ -4923,6 +4992,24 @@ protobufjs@^7.0.0:
     "@types/node" ">=13.7.0"
     long "^5.0.0"
 
+protobufjs@^7.2.4:
+  version "7.2.4"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.2.4.tgz#3fc1ec0cdc89dd91aef9ba6037ba07408485c3ae"
+  integrity sha512-AT+RJgD2sH8phPmCf7OUZR8xGdcJRga4+1cOaXJ64hvcSkVhNcRHOwIxUatPH15+nj59WAGTDv3LSGZPEQbJaQ==
+  dependencies:
+    "@protobufjs/aspromise" "^1.1.2"
+    "@protobufjs/base64" "^1.1.2"
+    "@protobufjs/codegen" "^2.0.4"
+    "@protobufjs/eventemitter" "^1.1.0"
+    "@protobufjs/fetch" "^1.1.0"
+    "@protobufjs/float" "^1.0.2"
+    "@protobufjs/inquire" "^1.1.0"
+    "@protobufjs/path" "^1.1.2"
+    "@protobufjs/pool" "^1.1.0"
+    "@protobufjs/utf8" "^1.1.0"
+    "@types/node" ">=13.7.0"
+    long "^5.0.0"
+
 psl@^1.1.33:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.9.0.tgz#d0df2a137f00794565fcaf3b2c00cd09f8d5a5a7"
@@ -5522,6 +5609,11 @@ tr46@^2.1.0:
   dependencies:
     punycode "^2.1.1"
 
+tr46@~0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
+  integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+
 treeverse@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/treeverse/-/treeverse-2.0.0.tgz#036dcef04bc3fd79a9b79a68d4da03e882d8a9ca"
@@ -5810,6 +5902,11 @@ wcwidth@^1.0.0:
   dependencies:
     defaults "^1.0.3"
 
+webidl-conversions@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
+  integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
+
 webidl-conversions@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-5.0.0.tgz#ae59c8a00b121543a2acc65c0434f57b0fc11aff"
@@ -5831,6 +5928,14 @@ whatwg-mimetype@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/whatwg-mimetype/-/whatwg-mimetype-2.3.0.tgz#3d4b1e0312d2079879f826aff18dbeeca5960fbf"
   integrity sha512-M4yMwr6mAnQz76TbJm914+gPpB/nCwvZbJU28cUD6dR004SAxDLOOSUaB1JDRqLtaOV/vi0IC5lEAGFgrjGv/g==
+
+whatwg-url@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-5.0.0.tgz#966454e8765462e37644d3626f6742ce8b70965d"
+  integrity sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==
+  dependencies:
+    tr46 "~0.0.3"
+    webidl-conversions "^3.0.0"
 
 whatwg-url@^8.0.0, whatwg-url@^8.5.0:
   version "8.7.0"

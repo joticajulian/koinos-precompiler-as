@@ -22,9 +22,9 @@ export interface PrecompilerConfig {
   files: string[];
 
   /**
-   * List of proto files relative to the source folder
+   * List of proto dirs relative to the source folder
    */
-  proto: string[];
+  protoPaths: { name: string; path: string }[];
 
   /**
    * Path to the common proto files of koinos. By default
@@ -64,6 +64,10 @@ export interface JsonDescriptor {
 export interface TsStructure {
   className: string;
   file: string;
+  imports: {
+    dependency: string;
+    modules: string[];
+  }[];
   proto: {
     className: string;
     file: string;
@@ -83,7 +87,6 @@ export interface TsStructure {
     name: string;
     argument: string;
   }[];
-  hasAuthorize: boolean;
   extends: TsStructure[];
 }
 

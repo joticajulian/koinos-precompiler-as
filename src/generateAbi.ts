@@ -1,19 +1,37 @@
 import fs from "fs";
-import path from "path";
+//import path from "path";
 import crypto from "crypto";
 import { execSync } from "child_process";
-import { Abi, TsStructure } from "./interface";
-import { generateJsonDescriptor, combineTsStructures } from "./utils";
+import { Abi, PrecompilerConfig, TsStructure } from "./interface";
+import {
+  generateJsonDescriptor,
+  combineTsStructures,
+  findFile,
+  getFiles,
+} from "./utils";
 
-const generateBinaryDescriptor = (protoFilesPaths: string[]): string => {
+const generateBinaryDescriptor = (
+  protoFiles: { path: string; file: string }[],
+  protoDir: string
+): string => {
   const pbFilePath = `./temp-${crypto.randomBytes(5).toString("hex")}.pb`;
-  const protoPath = path.parse(protoFilesPaths[0]).dir;
+  const pFilesAux = Array.isArray(protoFiles) ? protoFiles : [protoFiles];
+  // protos from imports
+  let pFiles = pFilesAux.map((f) => findFile(f.file, f.path));
+
+  // protos from the project
+  pFiles.push(...getFiles(protoDir, ".proto"));
+
+  // unique values
+  pFiles = [...new Set(pFiles)];
+
   execSync(
     [
       "yarn protoc",
-      `--proto_path=${protoPath}`,
+      `--proto_path=${protoDir}`,
+      //"--include_imports",
       `--descriptor_set_out=${pbFilePath}`,
-      `${protoFilesPaths.join(" ")}`,
+      `${pFiles.join(" ")}`,
     ].join(" ")
   );
   const descriptor = fs.readFileSync(pbFilePath);
@@ -23,7 +41,8 @@ const generateBinaryDescriptor = (protoFilesPaths: string[]): string => {
 
 export async function generateAbi(
   tsStructure: TsStructure,
-  protoFiles: string[]
+  protoPaths: PrecompilerConfig["protoPaths"],
+  protoDir: string
 ): Promise<Abi> {
   const abiData: Abi = {
     methods: {},
@@ -51,10 +70,19 @@ export async function generateAbi(
     });
   });
 
-  abiData.koilib_types = await generateJsonDescriptor(protoFiles);
+  const protos: { path: string; file: string }[] = [];
+  tsCombined[0].imports.forEach((i) => {
+    const protoPath = protoPaths.find((p) => p.name === i.dependency);
+    const protosToAdd = i.modules.map((m) => ({
+      file: m,
+      path: protoPath ? protoPath.path : protoDir,
+    }));
+    protos.push(...protosToAdd);
+  });
+  abiData.koilib_types = await generateJsonDescriptor(protos, protoDir);
 
   try {
-    abiData.types = generateBinaryDescriptor(protoFiles);
+    abiData.types = generateBinaryDescriptor(protos, protoDir);
   } catch (error) {
     console.error(error);
   }

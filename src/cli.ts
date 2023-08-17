@@ -9,6 +9,7 @@ import { generateIndex } from "./generateIndex";
 import { generateInferface } from "./generateInterface";
 import { generateAbi } from "./generateAbi";
 import { generateProto } from "./generateProto";
+import { getFiles } from "./utils";
 
 async function main() {
   program.option("--all");
@@ -26,10 +27,15 @@ async function main() {
     sourceDir,
     buildDir,
     koinosProtoDir,
-    proto,
+    protoPaths,
     files,
     class: cclass,
   } = getConfig(program.args[0]);
+
+  const protoPaths2 = protoPaths.map((p) => ({
+    ...p,
+    path: path.join(buildDir, "proto", path.parse(p.path).name),
+  }));
 
   if (Object.keys(options).length === 0) {
     // do all if no options are provided
@@ -61,43 +67,44 @@ async function main() {
       path.join(buildDir, "proto/google")
     );
 
+    // copy other folders with proto
+    protoPaths.forEach((p, i) => {
+      fse.copySync(p.path, protoPaths2[i].path);
+    });
+
     // generate proto ts
-    generateProto(proto, path.join(buildDir, "proto"));
-    proto.forEach((p) => {
-      const pRelative = path.relative(buildDir, p);
-      const pBuild = path.parse(p);
-      const pSource = path.parse(path.join(sourceDir, pRelative));
-      fs.copyFileSync(
-        path.join(pBuild.dir, `${pBuild.name}.ts`),
-        path.join(pSource.dir, `${pSource.name}.ts`)
-      );
+    generateProto(path.join(buildDir, "proto"));
+    const protoFilesTs = getFiles(path.join(buildDir, "proto"), ".ts");
+    protoFilesTs.forEach((pTs) => {
+      const filename = path.parse(pTs).base;
+      fs.copyFileSync(pTs, path.join(sourceDir, "proto", filename));
     });
     console.log(`proto files generated at ${path.join(buildDir, "proto")}`);
   }
 
   if (options.precompile || options.interface || options.abi) {
-    const tsStructure = await parseTypescript(files, proto, cclass);
+    const tsStructure = parseTypescript(files, cclass);
 
     if (options.interface) {
-      // prepare subfolders
-      const interfacesDir = path.join(buildDir, "interfaces");
-      if (!fs.existsSync(interfacesDir))
-        fs.mkdirSync(interfacesDir, { recursive: true });
-
       // generate interfaces
       const generateInterfaces = (ts: TsStructure) => {
-        const data = generateInferface(ts, interfacesDir);
-        const outputFile = path.join(interfacesDir, `I${ts.className}.ts`);
+        const data = generateInferface(ts, buildDir);
+        const outputFile = path.join(buildDir, `I${ts.className}.ts`);
         fs.writeFileSync(outputFile, data);
         ts.extends.forEach((e) => generateInterfaces(e));
       };
       generateInterfaces(tsStructure);
-      console.log(`interfaces generated at ${interfacesDir}`);
+      console.log(`interfaces generated at ${buildDir}`);
     }
 
     if (options.abi) {
       // generate abi
-      const abiData = await generateAbi(tsStructure, proto);
+
+      const abiData = await generateAbi(
+        tsStructure,
+        protoPaths2,
+        path.join(buildDir, "proto")
+      );
       const outputFileAbi = path.join(
         buildDir,
         `${cclass.toLocaleLowerCase()}-abi.json`

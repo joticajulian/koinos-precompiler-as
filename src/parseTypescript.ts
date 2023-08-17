@@ -2,17 +2,11 @@ import fs from "fs";
 import crypto from "crypto";
 import * as tsstruct from "koinos-ts-structure-parser";
 import { parse } from "comment-parser";
-import { Root, INamespace } from "protobufjs/light";
-import { TypeModel, Argument, TsStructure, JsonDescriptor } from "./interface";
-import { generateJsonDescriptor } from "./utils";
+import { TypeModel, Argument, TsStructure } from "./interface";
 
 function parseStruct2(
   structures: ReturnType<typeof tsstruct.parseStruct>[],
-  refClass: string,
-  protoStructure: {
-    file: string;
-    jsonDescriptor: JsonDescriptor;
-  }[]
+  refClass: string
 ): TsStructure {
   // find the structure that matches the refClass
   const structureId = structures.findIndex((st) => {
@@ -33,43 +27,34 @@ function parseStruct2(
   const tsStructure: TsStructure = {
     className: refClass,
     file: structure.name,
+    imports: [],
     proto: [],
     methods: [],
     events: [],
-    hasAuthorize: false,
     extends: [],
   };
 
   const addProto = (argType: string) => {
     const pRef = argType.split(".")[0];
-
-    // check if it is using proto authority
-    if (pRef === "authority") {
-      tsStructure.hasAuthorize = true;
+    const imp = structure.imports2.find((i) => i.modules.includes(pRef));
+    if (!imp) {
+      console.log(
+        `warning: the proto type ${pRef} was not found in the imports`
+      );
       return;
     }
 
-    // skip if there is no proto to add or if it is already included
-    if (!pRef || tsStructure.proto.find((p) => p.className === pRef)) return;
-    const pStruct = protoStructure.find((p) => {
-      return !!Root.fromJSON(p.jsonDescriptor as unknown as INamespace).lookup(
-        pRef
-      );
-    });
-    if (!pStruct) {
-      throw new Error(
-        [
-          `the proto definition "${pRef}" referenced in the file`,
-          `${tsStructure.file} was not found in the list of`,
-          "proto files defined in the config file",
-        ].join(" ")
-      );
+    const impIndex = tsStructure.imports.findIndex(
+      (i) => i.dependency === imp.dependency
+    );
+    if (impIndex < 0) {
+      tsStructure.imports.push({
+        dependency: imp.dependency,
+        modules: [pRef],
+      });
+    } else if (!tsStructure.imports[impIndex].modules.includes(pRef)) {
+      tsStructure.imports[impIndex].modules.push(pRef);
     }
-    tsStructure.proto.push({
-      className: pRef,
-      file: pStruct.file,
-      jsonDescriptor: pStruct.jsonDescriptor,
-    });
   };
 
   // Determine the index of the class in the file
@@ -210,18 +195,17 @@ function parseStruct2(
     // check if the class extends
     tsStructure.extends = structure.classes[classId].extends.map((e) => {
       const { typeName: parentRefClass } = e as unknown as { typeName: string };
-      return parseStruct2(structures, parentRefClass, protoStructure);
+      return parseStruct2(structures, parentRefClass);
     });
   });
 
   return tsStructure;
 }
 
-export async function parseTypescript(
+export function parseTypescript(
   files: string[],
-  proto: string[],
   className: string
-): Promise<TsStructure> {
+): TsStructure {
   const structures = files.map((file) => {
     try {
       const decls = fs.readFileSync(file, "utf8");
@@ -232,14 +216,5 @@ export async function parseTypescript(
     }
   });
 
-  const protoStructure = await Promise.all(
-    proto.map(async (p) => {
-      return {
-        file: p,
-        jsonDescriptor: await generateJsonDescriptor(proto),
-      };
-    })
-  );
-
-  return parseStruct2(structures, className, protoStructure);
+  return parseStruct2(structures, className);
 }

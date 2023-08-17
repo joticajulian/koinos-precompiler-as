@@ -5,16 +5,36 @@ export function generateInferface(
   tsStructure: TsStructure,
   dirInterfaces: string
 ): string {
-  const { className, methods, hasAuthorize } = tsStructure;
+  const { className, methods } = tsStructure;
+  const imports = JSON.parse(
+    JSON.stringify(tsStructure.imports)
+  ) as TsStructure["imports"];
+  const sdkImport = imports.find((i) => i.dependency === "@koinos/sdk-as");
+  if (sdkImport) {
+    if (!sdkImport.modules.includes("System")) sdkImport.modules.push("System");
+    if (!sdkImport.modules.includes("Protobuf"))
+      sdkImport.modules.push("Protobuf");
+    if (!sdkImport.modules.includes("StringBytes"))
+      sdkImport.modules.push("StringBytes");
+  } else {
+    imports.splice(0, 0, {
+      dependency: "@koinos/sdk-as",
+      modules: ["System", "Protobuf", "StringBytes"],
+    });
+  }
 
-  return `import { System, Protobuf, StringBytes${
-    hasAuthorize ? ", authority" : ""
-  } } from "@koinos/sdk-as";${tsStructure.extends
-    .map((e) => {
-      return `
-import { ${e.className} } from "./I${e.className}";`;
+  return `${imports
+    .map((i) => {
+      return `import { ${i.modules.join(", ")} } from "${i.dependency}";
+`;
     })
-    .join("")}${tsStructure.proto
+    .join("")}
+${tsStructure.extends
+  .map((e) => {
+    return `
+import { ${e.className} } from "./I${e.className}";`;
+  })
+  .join("")}${tsStructure.proto
     .map((p) => {
       return `
 import { ${p.className} } from "${simplifyFile(p.file, dirInterfaces)}";`;

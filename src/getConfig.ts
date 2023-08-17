@@ -20,15 +20,17 @@ export function getConfig(configFile: string): PrecompilerConfig {
     ? path.join(dir, config.koinosProtoDir)
     : path.join(dir, "node_modules/koinos-precompiler-as/koinos-proto");
 
-  const proto = config.proto.map((p) => path.join(buildDir, p));
   const files = config.files.map((f) => path.join(buildDir, f));
+  const protoPaths = config.protoPaths
+    ? config.protoPaths.map((p) => ({ ...p, path: path.join(dir, p.path) }))
+    : [];
 
   return {
     class: config.class,
     sourceDir,
     buildDir,
     files,
-    proto,
+    protoPaths,
     koinosProtoDir,
   };
 }

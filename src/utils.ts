@@ -1,4 +1,5 @@
 import * as pbjs from "protobufjs-cli/pbjs";
+import fs from "fs";
 import path from "path";
 import { JsonDescriptor, TsStructure } from "./interface";
 
@@ -15,11 +16,47 @@ export function simplifyFile(f: string, relativeTo: string): string {
   return fileRef;
 }
 
+/**
+ * Get files of a specific directory with same extension
+ */
+export function getFiles(filepath: string, ext: ".proto" | ".ts"): string[] {
+  const files: string[] = [];
+  const results = fs.readdirSync(filepath, { withFileTypes: true });
+  results.forEach((result) => {
+    if (result.isDirectory()) return;
+    if (!result.name.endsWith(ext)) return;
+    files.push(path.join(filepath, result.name));
+  });
+  return files;
+}
+
+/**
+ * Find a .proto file recursively in a path
+ * @param file name of the proto file
+ * @param filepath root folder to start the search
+ * @returns
+ */
+export function findFile(file: string, filepath: string): string {
+  const filename = `${path.parse(file).name}.proto`;
+  const results = fs.readdirSync(filepath, { withFileTypes: true });
+  for (let i = 0; i < results.length; i += 1) {
+    const result = results[i];
+    if (result.isDirectory()) {
+      const fileFound = findFile(filename, path.join(filepath, result.name));
+      if (fileFound) return fileFound;
+    } else if (result.name === filename) {
+      return path.join(filepath, filename);
+    }
+  }
+  return "";
+}
+
 export function combineTsStructures(
   ts: TsStructure,
   entryPoints: string[] = [],
   proto: TsStructure["proto"] = [],
-  events: TsStructure["events"] = []
+  events: TsStructure["events"] = [],
+  imports: TsStructure["imports"] = []
 ): TsStructure[] {
   const allMethods: TsStructure[] = [];
   const methodsToAdd = ts.methods.filter(
@@ -31,6 +68,16 @@ export function combineTsStructures(
   const eventsToAdd = ts.events.filter(
     (e) => !events.find((ee) => e.name === ee.name)
   );
+  ts.imports.forEach((i) => {
+    const impIndex = imports.findIndex((ii) => i.dependency === ii.dependency);
+    if (impIndex < 0) imports.push(i);
+    else {
+      i.modules.forEach((m) => {
+        if (!imports[impIndex].modules.includes(m))
+          imports[impIndex].modules.push(m);
+      });
+    }
+  });
   allMethods.push({
     ...ts,
     methods: methodsToAdd,
@@ -40,25 +87,36 @@ export function combineTsStructures(
   ts.methods.forEach((m) => entryPoints.push(m.entryPoint));
   ts.proto.forEach((p) => proto.push(p));
   ts.extends.forEach((e) => {
-    allMethods.push(...combineTsStructures(e, entryPoints, proto, events));
+    allMethods.push(
+      ...combineTsStructures(e, entryPoints, proto, events, imports)
+    );
   });
+  allMethods[0].imports = imports;
 
   return allMethods;
 }
 
 export const generateJsonDescriptor = async (
-  protoFiles: string | string[]
+  protoFiles: { path: string; file: string }[],
+  protoDir: string
 ): Promise<JsonDescriptor> => {
   return new Promise((resolve, reject) => {
-    const pFiles = Array.isArray(protoFiles) ? protoFiles : [protoFiles];
-    const protoDir = path.parse(pFiles[0]).dir;
+    const pFilesAux = Array.isArray(protoFiles) ? protoFiles : [protoFiles];
+    // protos from imports
+    let pFiles = pFilesAux.map((f) => findFile(f.file, f.path));
+
+    // protos from the project
+    pFiles.push(...getFiles(protoDir, ".proto"));
+
+    // unique values
+    pFiles = [...new Set(pFiles)];
+
     pbjs.main(
       ["--keep-case", "--path", protoDir, "--target", "json", ...pFiles],
       (err, output) => {
         if (err) reject(err);
         if (output) {
           const jsonDescriptor = JSON.parse(output) as JsonDescriptor;
-          delete jsonDescriptor.nested.koinos;
           delete jsonDescriptor.nested.google;
           resolve(jsonDescriptor);
         } else {
