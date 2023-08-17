@@ -26,13 +26,12 @@ async function main() {
   const {
     sourceDir,
     buildDir,
-    koinosProtoDir,
-    protoPaths,
+    protoImport,
     files,
     class: cclass,
   } = getConfig(program.args[0]);
 
-  const protoPaths2 = protoPaths.map((p) => ({
+  const protoImport2 = protoImport.map((p) => ({
     ...p,
     path: path.join(buildDir, "proto", path.parse(p.path).name),
   }));
@@ -57,19 +56,9 @@ async function main() {
   }
 
   if (options.proto) {
-    // copy koinos protos
-    fse.copySync(
-      path.join(koinosProtoDir, "koinos"),
-      path.join(buildDir, "proto/koinos")
-    );
-    fse.copySync(
-      path.join(koinosProtoDir, "google"),
-      path.join(buildDir, "proto/google")
-    );
-
     // copy other folders with proto
-    protoPaths.forEach((p, i) => {
-      fse.copySync(p.path, protoPaths2[i].path);
+    protoImport.forEach((p, i) => {
+      fse.copySync(p.path, protoImport2[i].path);
     });
 
     // generate proto ts
@@ -102,7 +91,7 @@ async function main() {
 
       const abiData = await generateAbi(
         tsStructure,
-        protoPaths2,
+        protoImport2,
         path.join(buildDir, "proto")
       );
       const outputFileAbi = path.join(

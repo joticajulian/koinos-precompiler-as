@@ -41,7 +41,7 @@ const generateBinaryDescriptor = (
 
 export async function generateAbi(
   tsStructure: TsStructure,
-  protoPaths: PrecompilerConfig["protoPaths"],
+  protoImport: PrecompilerConfig["protoImport"],
   protoDir: string
 ): Promise<Abi> {
   const abiData: Abi = {
@@ -72,7 +72,7 @@ export async function generateAbi(
 
   const protos: { path: string; file: string }[] = [];
   tsCombined[0].imports.forEach((i) => {
-    const protoPath = protoPaths.find((p) => p.name === i.dependency);
+    const protoPath = protoImport.find((p) => p.name === i.dependency);
     const protosToAdd = i.modules.map((m) => ({
       file: m,
       path: protoPath ? protoPath.path : protoDir,

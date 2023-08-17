@@ -24,13 +24,7 @@ export interface PrecompilerConfig {
   /**
    * List of proto dirs relative to the source folder
    */
-  protoPaths: { name: string; path: string }[];
-
-  /**
-   * Path to the common proto files of koinos. By default
-   * it is "./node_modules/koinos-precompiler-as/koinos-proto/koinos"
-   */
-  koinosProtoDir: string;
+  protoImport: { name: string; path: string }[];
 }
 
 export interface Abi {

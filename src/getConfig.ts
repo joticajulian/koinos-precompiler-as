@@ -16,13 +16,10 @@ export function getConfig(configFile: string): PrecompilerConfig {
   const buildDir = config.buildDir
     ? path.join(dir, config.buildDir)
     : path.join(dir, "build");
-  const koinosProtoDir = config.koinosProtoDir
-    ? path.join(dir, config.koinosProtoDir)
-    : path.join(dir, "node_modules/koinos-precompiler-as/koinos-proto");
 
   const files = config.files.map((f) => path.join(buildDir, f));
-  const protoPaths = config.protoPaths
-    ? config.protoPaths.map((p) => ({ ...p, path: path.join(dir, p.path) }))
+  const protoImport = config.protoImport
+    ? config.protoImport.map((p) => ({ ...p, path: path.join(dir, p.path) }))
     : [];
 
   return {
@@ -30,8 +27,7 @@ export function getConfig(configFile: string): PrecompilerConfig {
     sourceDir,
     buildDir,
     files,
-    protoPaths,
-    koinosProtoDir,
+    protoImport,
   };
 }
 
