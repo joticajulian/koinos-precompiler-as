@@ -58,7 +58,9 @@ async function main() {
   if (options.proto) {
     // copy other folders with proto
     protoImport.forEach((p, i) => {
-      fse.copySync(p.path, protoImport2[i].path);
+      fse.copySync(p.path, protoImport2[i].path, {
+        filter: (s) => !p.exclude || !p.exclude.some((e) => s.includes(e)),
+      });
     });
 
     // generate proto ts
@@ -88,7 +90,6 @@ async function main() {
 
     if (options.abi) {
       // generate abi
-
       const abiData = await generateAbi(
         tsStructure,
         protoImport2,

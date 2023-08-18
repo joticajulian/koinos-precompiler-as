@@ -24,7 +24,7 @@ export interface PrecompilerConfig {
   /**
    * List of proto dirs relative to the source folder
    */
-  protoImport: { name: string; path: string }[];
+  protoImport: { name: string; path: string; exclude?: string[] }[];
 }
 
 export interface Abi {
