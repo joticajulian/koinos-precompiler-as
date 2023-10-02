@@ -1,3 +1,8 @@
+export interface FileDep {
+  dependency: string;
+  path: string;
+}
+
 export interface PrecompilerConfig {
   /**
    * Main class of the project
@@ -25,6 +30,11 @@ export interface PrecompilerConfig {
    * List of proto dirs relative to the source folder
    */
   protoImport: { name: string; path: string; exclude?: string[] }[];
+
+  /**
+   * List of TS files imported from node_modules
+   */
+  filesImport: { dependency: string; path: string }[];
 }
 
 export interface Abi {
@@ -58,6 +68,7 @@ export interface JsonDescriptor {
 export interface TsStructure {
   className: string;
   file: string;
+  dependency: string;
   imports: {
     dependency: string;
     modules: string[];

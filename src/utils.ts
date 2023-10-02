@@ -68,9 +68,15 @@ export function combineTsStructures(
   const eventsToAdd = ts.events.filter(
     (e) => !events.find((ee) => e.name === ee.name)
   );
+  const isImportedFile = !!ts.dependency;
   ts.imports.forEach((i) => {
-    const impIndex = imports.findIndex((ii) => i.dependency === ii.dependency);
-    if (impIndex < 0) imports.push(i);
+    const impIndex = imports.findIndex((ii) => {
+      return isImportedFile
+        ? ii.dependency === ts.dependency
+        : ii.dependency === i.dependency;
+    });
+    if (impIndex < 0)
+      imports.push(isImportedFile ? { ...i, dependency: ts.dependency } : i);
     else {
       i.modules.forEach((m) => {
         if (!imports[impIndex].modules.includes(m))

@@ -23,18 +23,25 @@ export function generateInferface(
     });
   }
 
+  // import extended classes
+  const importExtends = tsStructure.extends
+    .map((e) => {
+      if (e.dependency)
+        return `
+import { I${e.className} as ${e.className} } from "${e.dependency}";
+`;
+      return `
+import { ${e.className} } from "./I${e.className}";`;
+    })
+    .join("");
+
   return `${imports
     .map((i) => {
       return `import { ${i.modules.join(", ")} } from "${i.dependency}";
 `;
     })
     .join("")}
-${tsStructure.extends
-  .map((e) => {
-    return `
-import { ${e.className} } from "./I${e.className}";`;
-  })
-  .join("")}${tsStructure.proto
+${importExtends}${tsStructure.proto
     .map((p) => {
       return `
 import { ${p.className} } from "${simplifyFile(p.file, dirInterfaces)}";`;

@@ -17,16 +17,26 @@ export function getConfig(configFile: string): PrecompilerConfig {
     ? path.join(dir, config.buildDir)
     : path.join(dir, "build");
 
-  const files = config.files.map((f) => path.join(buildDir, f));
   const protoImport = config.protoImport
     ? config.protoImport.map((p) => ({ ...p, path: path.join(dir, p.path) }))
     : [];
+  let filesImport = config.filesImport
+    ? config.filesImport.map((f) => ({ ...f, path: path.join(dir, f.path) }))
+    : [];
+  const localFiles = config.files.map((f) => ({
+    path: path.join(buildDir, f),
+    dependency: "",
+  }));
+  const files = config.files.map((f) => path.join(buildDir, f));
+
+  filesImport = [...localFiles, ...filesImport];
 
   return {
     class: config.class,
     sourceDir,
     buildDir,
     files,
+    filesImport,
     protoImport,
   };
 }

@@ -27,7 +27,8 @@ async function main() {
     sourceDir,
     buildDir,
     protoImport,
-    files,
+    // files,
+    filesImport,
     class: cclass,
   } = getConfig(program.args[0]);
 
@@ -74,7 +75,7 @@ async function main() {
   }
 
   if (options.precompile || options.interface || options.abi) {
-    const tsStructure = parseTypescript(files, cclass);
+    const tsStructure = parseTypescript(filesImport, cclass);
 
     if (options.interface) {
       // generate interfaces

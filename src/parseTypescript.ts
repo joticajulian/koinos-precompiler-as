@@ -2,11 +2,12 @@ import fs from "fs";
 import crypto from "crypto";
 import * as tsstruct from "koinos-ts-structure-parser";
 import { parse } from "comment-parser";
-import { TypeModel, Argument, TsStructure } from "./interface";
+import { TypeModel, Argument, TsStructure, FileDep } from "./interface";
 
 function parseStruct2(
   structures: ReturnType<typeof tsstruct.parseStruct>[],
-  refClass: string
+  refClass: string,
+  files: FileDep[]
 ): TsStructure {
   // find the structure that matches the refClass
   const structureId = structures.findIndex((st) => {
@@ -27,6 +28,7 @@ function parseStruct2(
   const tsStructure: TsStructure = {
     className: refClass,
     file: structure.name,
+    dependency: files.find((f) => f.path === structure.name)?.dependency || "",
     imports: [],
     proto: [],
     methods: [],
@@ -195,7 +197,7 @@ function parseStruct2(
     // check if the class extends
     tsStructure.extends = structure.classes[classId].extends.map((e) => {
       const { typeName: parentRefClass } = e as unknown as { typeName: string };
-      return parseStruct2(structures, parentRefClass);
+      return parseStruct2(structures, parentRefClass, files);
     });
   });
 
@@ -203,18 +205,18 @@ function parseStruct2(
 }
 
 export function parseTypescript(
-  files: string[],
+  files: FileDep[],
   className: string
 ): TsStructure {
   const structures = files.map((file) => {
     try {
-      const decls = fs.readFileSync(file, "utf8");
-      return tsstruct.parseStruct(decls, {}, file);
+      const decls = fs.readFileSync(file.path, "utf8");
+      return tsstruct.parseStruct(decls, {}, file.path);
     } catch (error) {
-      console.error(`error reading file ${file}`);
+      console.error(`error reading file ${file.path}`);
       throw error;
     }
   });
 
-  return parseStruct2(structures, className);
+  return parseStruct2(structures, className, files);
 }
