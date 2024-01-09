@@ -2,10 +2,10 @@ import { execSync } from "child_process";
 import { getFiles } from "./utils";
 
 export function generateProto(protoDir: string): void {
-  let protocFile = './node_modules/.bin/as-proto-gen';
+  let protocFile = "./node_modules/.bin/as-proto-gen";
 
-  if (process.platform === 'win32') {
-    protocFile = '.\\node_modules\\.bin\\as-proto-gen.cmd';
+  if (process.platform === "win32") {
+    protocFile = ".\\node_modules\\.bin\\as-proto-gen.cmd";
   }
 
   const protoFiles = getFiles(protoDir, ".proto");
