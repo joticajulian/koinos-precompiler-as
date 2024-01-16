@@ -193,12 +193,12 @@ function parseStruct2(
       retType,
       isVoid,
     });
+  });
 
-    // check if the class extends
-    tsStructure.extends = structure.classes[classId].extends.map((e) => {
-      const { typeName: parentRefClass } = e as unknown as { typeName: string };
-      return parseStruct2(structures, parentRefClass, files);
-    });
+  // check if the class extends
+  tsStructure.extends = structure.classes[classId].extends.map((e) => {
+    const { typeName: parentRefClass } = e as unknown as { typeName: string };
+    return parseStruct2(structures, parentRefClass, files);
   });
 
   return tsStructure;

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.3.1](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.3.1) (2024-01-16)
+
+### 🐛 Bug Fixes
+
+- Fix extends when when the parent class does not have functions
+
 ## [v1.3.0](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.3.0) (2024-01-09)
 
 ### 🚀 Features
