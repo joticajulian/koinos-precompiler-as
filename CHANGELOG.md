@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.3.4](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.3.4) (2024-02-20)
+
+### 🐛 Bug Fixes
+
+- Fix koinos-proto
+
 ## [v1.3.3](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.3.3) (2024-02-20)
 
 ### 🐛 Bug Fixes
