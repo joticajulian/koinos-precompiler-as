@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.4.1](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.4.1) (2024-02-24)
+
+-- sync
+
 ## [v1.4.0](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.4.0) (2024-02-24)
 
 ### 🚀 Features
