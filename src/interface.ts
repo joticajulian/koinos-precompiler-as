@@ -35,18 +35,25 @@ export interface PrecompilerConfig {
    * List of TS files imported from node_modules
    */
   filesImport: { dependency: string; path: string }[];
+
+  /**
+   * Boolean defining if the generation of the ABI will support
+   * the original ABI created in koinos CLI, which includes
+   * "entry-point" as string and "read-only"
+   */
+  supportAbi1?: boolean;
 }
 
 export interface Abi {
   methods: {
     [x: string]: {
       entry_point: number;
-      "entry-point": string;
-      argument?: string;
-      return?: string;
-      read_only?: boolean;
-      "read-only"?: boolean;
+      argument: string;
+      return: string;
+      read_only: boolean;
       description?: string;
+      "entry-point"?: string;
+      "read-only"?: boolean;
     };
   };
   events?: {

@@ -41,7 +41,8 @@ const generateBinaryDescriptor = (
 export async function generateAbi(
   tsStructure: TsStructure,
   protoImport: PrecompilerConfig["protoImport"],
-  protoDir: string
+  protoDir: string,
+  supportAbi1 = false
 ): Promise<Abi> {
   const abiData: Abi = {
     methods: {},
@@ -58,9 +59,11 @@ export async function generateAbi(
         return: m.isVoid ? "" : m.retType,
         description: m.description,
         entry_point: Number(m.entryPoint),
-        "entry-point": m.entryPoint,
         read_only: m.readOnly,
-        "read-only": m.readOnly,
+        ...(supportAbi1 && {
+          "entry-point": m.entryPoint,
+          "read-only": m.readOnly,
+        }),
       };
     });
     ts.events.forEach((e) => {

@@ -32,7 +32,7 @@ export function getConfig(configFile: string): PrecompilerConfig {
   filesImport = [...localFiles, ...filesImport];
 
   return {
-    class: config.class,
+    ...config,
     sourceDir,
     buildDir,
     files,

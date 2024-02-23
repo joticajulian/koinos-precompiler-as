@@ -30,6 +30,7 @@ async function main() {
     // files,
     filesImport,
     class: cclass,
+    supportAbi1,
   } = getConfig(program.args[0]);
 
   const protoImport2 = protoImport.map((p) => ({
@@ -94,7 +95,8 @@ async function main() {
       const abiData = await generateAbi(
         tsStructure,
         protoImport2,
-        path.join(buildDir, "proto")
+        path.join(buildDir, "proto"),
+        supportAbi1
       );
       const outputFileAbi = path.join(
         buildDir,
