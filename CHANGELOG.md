@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.4.0](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.4.0) (2024-02-24)
+
+### 🚀 Features
+
+- Option `supportAbi1` to configure the ABI support. When `false` it will create the ABI with `entry_point` and `read_only`. When `true` it will create the ABI with `entry_point`, `entry-point`, `read_only`, and `read-only`.
+
 ## [v1.3.2](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.3.2) (2024-01-16)
 
 ### 🐛 Bug Fixes
