@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.4.2](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.4.2) (2024-02-26)
+
+### 🐛 Bug Fixes
+
+- Fix ABI computation when protofiles has empty strings
+
 ## [v1.4.1](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.4.1) (2024-02-24)
 
 -- sync
