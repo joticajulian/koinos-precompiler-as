@@ -109,7 +109,11 @@ export const generateJsonDescriptor = async (
   return new Promise((resolve, reject) => {
     const pFilesAux = Array.isArray(protoFiles) ? protoFiles : [protoFiles];
     // protos from imports
-    let pFiles = pFilesAux.map((f) => findFile(f.file, f.path));
+    let pFiles = pFilesAux
+      // remove empty strings
+      .filter((f) => f)
+      // find file in path
+      .map((f) => findFile(f.file, f.path));
 
     // protos from the project
     pFiles.push(...getFiles(protoDir, ".proto"));
