@@ -110,10 +110,16 @@ export const generateJsonDescriptor = async (
     const pFilesAux = Array.isArray(protoFiles) ? protoFiles : [protoFiles];
     // protos from imports
     let pFiles = pFilesAux
-      // remove empty strings
-      .filter((f) => f)
       // find file in path
-      .map((f) => findFile(f.file, f.path));
+      .map((f) => {
+        const foundFile = findFile(f.file, f.path);
+        if (!foundFile) {
+          throw new Error(
+            `file ${f.file}.proto not found in path ${f.path}. Make sure to define its corresponding folder in the "protoImport" field of koinos.config.js`
+          );
+        }
+        return foundFile;
+      });
 
     // protos from the project
     pFiles.push(...getFiles(protoDir, ".proto"));

@@ -167,7 +167,7 @@ function parseStruct2(
     const isVoid = retType === "void";
 
     if (!getTag("ignoreproto")) {
-      addProto(argType);
+      if (argType) addProto(argType);
       if (!isVoid) addProto(retType);
     }
 

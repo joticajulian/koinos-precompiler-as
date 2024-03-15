@@ -52,7 +52,9 @@ export class ${className}${
     tsStructure.extends.length > 0
       ? ` extends ${tsStructure.extends.map((e) => e.className).join(", ")}`
       : ""
-  } {
+  } {${
+    tsStructure.extends.length === 0
+      ? `
   _contractId: Uint8Array;
 
   /**
@@ -64,6 +66,8 @@ export class ${className}${
    */
   constructor(contractId: Uint8Array) {
     this._contractId = contractId;
+  }`
+      : ""
   }${methods
     .map((m) => {
       return `${m.comment}
