@@ -81,14 +81,14 @@ export class ${className}${
     if (callRes.code != 0) {
       const errorMessage = \`failed to call '${className}.${
         m.name
-      }': \${callRes.res.error && callRes.res.error!.message ? callRes.res.error!.message! : "unknown error"}\`;
+      }': \${callRes.res.error && callRes.res.error!.message ? callRes.res.error!.message : "unknown error"}\`;
       System.exit(callRes.code, StringBytes.stringToBytes(errorMessage));
     }
     ${
       m.isVoid
         ? "return;"
         : `if (!callRes.res.object) return new ${m.retType}();
-    return Protobuf.decode<${m.retType}>(callRes.res.object!, ${m.retType}.decode);`
+    return Protobuf.decode<${m.retType}>(callRes.res.object, ${m.retType}.decode);`
     }
   }`;
     })
