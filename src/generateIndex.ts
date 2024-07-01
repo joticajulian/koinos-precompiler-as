@@ -42,7 +42,7 @@ switch (contract.callArgs!.entry_point) {
     
   ${t.methods
     .map((m) => {
-      return `// ${m.name}
+      return `// ${m.nameAbi}
   case ${m.entryPoint}: {${
         m.argType
           ? `

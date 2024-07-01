@@ -54,7 +54,7 @@ export async function generateAbi(
 
   tsCombined.forEach((ts) => {
     ts.methods.forEach((m) => {
-      abiData.methods[m.name] = {
+      abiData.methods[m.nameAbi] = {
         argument: m.argType,
         return: m.isVoid ? "" : m.retType,
         description: m.description,

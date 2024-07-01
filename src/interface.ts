@@ -87,6 +87,7 @@ export interface TsStructure {
   }[];
   methods: {
     name: string;
+    nameAbi: string;
     comment: string;
     description: string;
     entryPoint: string;

@@ -64,6 +64,7 @@ function parseStruct2(
 
   // Parse data on each class method
   structure.classes[classId].methods.forEach((method) => {
+    let { name } = method;
     const comments = parse(method.text);
 
     // skip functions without comments
@@ -73,7 +74,7 @@ function parseStruct2(
     if (comments.length > 1) {
       throw new Error(
         [
-          `the function "${method.name}" of class "${refClass}"`,
+          `the function "${name}" of class "${refClass}"`,
           `has ${comments.length} block comments. However, only`,
           " 1 block comment is allowed",
         ].join(" ")
@@ -91,7 +92,7 @@ function parseStruct2(
     if (method.arguments.length > 1) {
       throw new Error(
         [
-          `the function "${method.name}" of class "${refClass}"`,
+          `the function "${name}" of class "${refClass}"`,
           `has ${method.arguments.length} arguments. However, only`,
           "1 argument is allowed. If you need more arguments consider",
           "to wrap them in a single definition in the proto file",
@@ -101,6 +102,7 @@ function parseStruct2(
 
     // check if has an @entrypoint. Otherwise calculate it
     let entryPoint: string;
+    let nameAbi = name;
     const tagEntryPoint = getTag("entrypoint");
     if (tagEntryPoint) {
       if (/^([a-zA-z])/.test(tagEntryPoint.name)) {
@@ -110,6 +112,8 @@ function parseStruct2(
           .update(tagEntryPoint.name)
           .digest("hex")
           .slice(0, 8)}`;
+        // this option overrides the name of the method
+        nameAbi = tagEntryPoint.name;
       } else {
         // entry point defined as 4-bytes number
         const number = Number(tagEntryPoint.name);
@@ -127,7 +131,7 @@ function parseStruct2(
       // calculation of the entry point from the function name
       entryPoint = `0x${crypto
         .createHash("sha256")
-        .update(method.name)
+        .update(name)
         .digest("hex")
         .slice(0, 8)}`;
     }
@@ -158,7 +162,7 @@ function parseStruct2(
     if (!method.returnType) {
       throw new Error(
         [
-          `no returnType defined for method "${method.name}"`,
+          `no returnType defined for method "${name}"`,
           ` in class "${refClass}"`,
         ].join(" ")
       );
@@ -185,6 +189,7 @@ function parseStruct2(
     // store results
     tsStructure.methods.push({
       name: method.name,
+      nameAbi,
       comment: method.text.slice(0, method.text.indexOf("*/") + 2),
       description: comment.description,
       entryPoint,
