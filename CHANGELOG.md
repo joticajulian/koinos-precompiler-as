@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.6.0](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.6.0) (2024-07-02)
+
+### 🚀 Features
+
+- The @entrypoint comment in the method now can be used to override the name of the method.
+  This option is useful when the parent class uses different arguments and cannot be overriden.
+
 ## [v1.5.1](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.5.1) (2024-04-09)
 
 ### 🐛 Bug Fixes
