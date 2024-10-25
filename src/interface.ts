@@ -58,6 +58,9 @@ export interface Abi {
   };
   events?: {
     [x: string]: {
+      type?: string;
+      // @deprecated - "argument" will be removed in future
+      // versions. Use "type" instead
       argument?: string;
       description?: string;
     };

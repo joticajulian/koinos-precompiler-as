@@ -68,7 +68,11 @@ export async function generateAbi(
     });
     ts.events.forEach((e) => {
       if (!abiData.events) abiData.events = {};
-      abiData.events[e.name] = { argument: e.argument };
+      abiData.events[e.name] = {
+        type: e.argument,
+        // todo: remove argument in future versions. Use type instead
+        argument: e.argument,
+      };
     });
   });
 
