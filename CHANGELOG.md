@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.7.0](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.7.0) (2024-10-25)
+
+### 🚀 Features
+
+- Support new event standard in the generation of ABIs. Example:
+```
+{
+  "methods": { ... },
+  "types": "...",
+  "events": {
+    "token.transfer_event": {
+      "argument": "token.transfer_args",
+      "type": "token.transfer_args"
+    }
+  }
+}
+```
+The new standard uses "type" instead of "argument" when defining events. The "argument" will be
+removed in future versions
+
 ## [v1.6.0](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.6.0) (2024-07-02)
 
 ### 🚀 Features
