@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. 🤘
 ### 🚀 Features
 
 - Support new event standard in the generation of ABIs. Example:
+
 ```
 {
   "methods": { ... },
@@ -19,6 +20,7 @@ All notable changes to this project will be documented in this file. 🤘
   }
 }
 ```
+
 The new standard uses "type" instead of "argument" when defining events. The "argument" will be
 removed in future versions
 

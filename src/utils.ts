@@ -70,10 +70,46 @@ export function combineTsStructures(
   );
   const isImportedFile = !!ts.dependency;
   ts.imports.forEach((i) => {
+    /**
+     * // File 1 -- importedFile = false (this is the top file)
+     * import { smartwalletallowance, common } from "@koinosbox/contracts";
+     * export class SmartWalletText extends SmartWalletAllowance { ... }
+     *
+     * // File 2 -- importedFile = true
+     * import { authority } from "@koinos/sdk-as";
+     * import { smartwalletallowance } from "./proto/smartwalletallowance";
+     * export class SmartWalletAllowance { ... }
+     *
+     * what we want at the end is:
+     * {
+     *   imports: [
+     *     {
+     *       dependency: './proto/smartwallettext',
+     *       modules: [ 'smartwallettext' ]
+     *     },
+     *     {
+     *       dependency: '@koinosbox/contracts',
+     *       modules: [ 'smartwalletallowance', 'common' ]
+     *       // note that "smartwalletallowance" is not using
+     *       // "./proto/smartwalletallowance" as dependency as File 2 suggests
+     *     },
+     *     {
+     *       dependency: '@koinos/sdk-as',
+     *       modules: [ 'authority' ]
+     *       // note that "authority" uses "@koinos/sdk-as"
+     *       // as File 2 suggests
+     *     }
+     *   ]
+     * }
+     */
     const impIndex = imports.findIndex((ii) => {
-      return isImportedFile
-        ? ii.dependency === ts.dependency
-        : ii.dependency === i.dependency;
+      return isImportedFile && i.dependency.startsWith(".")
+        ? // if the imported file uses local dependencies (like ./proto/smartwalletallowance)
+          // search for the global dependency (@koinosbox/contracts)
+          ii.dependency === ts.dependency
+        : // otherwise continue searching the dependency defined by
+          // the imported file or root file (@koinosbox/contracts)
+          ii.dependency === i.dependency;
     });
     if (impIndex < 0)
       imports.push(isImportedFile ? { ...i, dependency: ts.dependency } : i);
