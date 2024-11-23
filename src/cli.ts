@@ -80,11 +80,11 @@ async function main() {
 
     if (options.interface) {
       // generate interfaces
-      const generateInterfaces = (ts: TsStructure) => {
-        const data = generateInferface(ts, buildDir);
+      const generateInterfaces = (ts: TsStructure, isExtension = false) => {
+        const data = generateInferface(ts, buildDir, isExtension);
         const outputFile = path.join(buildDir, `I${ts.className}.ts`);
         fs.writeFileSync(outputFile, data);
-        ts.extends.forEach((e) => generateInterfaces(e));
+        ts.extends.forEach((e) => generateInterfaces(e, true));
       };
       generateInterfaces(tsStructure);
       console.log(`interfaces generated at ${buildDir}`);

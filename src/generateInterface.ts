@@ -3,7 +3,8 @@ import { simplifyFile } from "./utils";
 
 export function generateInferface(
   tsStructure: TsStructure,
-  dirInterfaces: string
+  dirInterfaces: string,
+  isExtension: boolean
 ): string {
   const { className, methods } = tsStructure;
   const imports = JSON.parse(
@@ -23,6 +24,18 @@ export function generateInferface(
     });
   }
 
+  // generate imports
+  const importsText = imports
+    .map((i) => {
+      const dep =
+        isExtension && i.dependency.startsWith(".")
+          ? tsStructure.dependency
+          : i.dependency;
+
+      return `import { ${i.modules.join(", ")} } from "${dep}";`;
+    })
+    .join("\n");
+
   // import extended classes
   const importExtends = tsStructure.extends
     .map((e) => {
@@ -35,12 +48,8 @@ import { ${e.className} } from "./I${e.className}";`;
     })
     .join("");
 
-  return `${imports
-    .map((i) => {
-      return `import { ${i.modules.join(", ")} } from "${i.dependency}";
-`;
-    })
-    .join("")}
+  // Generate interface
+  return `${importsText}
 ${importExtends}${tsStructure.proto
     .map((p) => {
       return `

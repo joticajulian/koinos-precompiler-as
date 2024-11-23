@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. 🤘
 ### 🐛 Bug Fixes
 
 - Fix the definition of protos in koilib_types when the class extends another one. Some comments
-were added to the code to improve the documentation of this change.
+  were added to the code to improve the documentation of this change.
 
 ## [v1.7.0](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.7.0) (2024-10-25)
 
