@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.7.2](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.7.2) (2024-11-23)
+
+### 🐛 Bug Fixes
+
+- Fix imports during the generation of interfaces for extended classes. Example:
+  Nicknames extends the NFT class. During the generation of the interface INFT.ts
+  (the extended class), the import "./proto/nft" is replaced by the dependency:
+  "@koinosbox/contracts".
+
 ## [v1.7.1](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.7.1) (2024-10-25)
 
 ### 🐛 Bug Fixes
