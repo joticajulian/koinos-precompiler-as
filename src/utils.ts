@@ -112,7 +112,11 @@ export function combineTsStructures(
           ii.dependency === i.dependency;
     });
     if (impIndex < 0)
-      imports.push(isImportedFile ? { ...i, dependency: ts.dependency } : i);
+      imports.push(
+        isImportedFile && i.dependency.startsWith(".")
+          ? { ...i, dependency: ts.dependency }
+          : i
+      );
     else {
       i.modules.forEach((m) => {
         if (!imports[impIndex].modules.includes(m))
