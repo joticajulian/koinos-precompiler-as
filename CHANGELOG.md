@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.7.3](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.7.3) (2025-02-24)
+
+### 🐛 Bug Fixes
+
+- Fix the compilation of proto files of extended classes. Example:
+  The SmartWalletAllowance used the "authority" proto from @koinos/sdk-as.
+  However, if this class was used as an extension of another class, the
+  precompiler was linking "authority" to @koinosbox/contracts, instead of
+  @koinos/sdk-as. This issue was fixed.
+
 ## [v1.7.2](https://github.com/joticajulian/koinos-precompiler-as/releases/tag/v1.7.2) (2024-11-23)
 
 ### 🐛 Bug Fixes
